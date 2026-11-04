@@ -1,180 +1,543 @@
-# 🤖 BẢNG PHÂN CÔNG NHIỆM VỤ & ĐẶC TẢ KỸ THUẬT CHO AI AGENT
-## DỰ ÁN: URBANTREE — HỆ THỐNG QUẢN LÝ CÂY XANH ĐÔ THỊ (QR & BLOCKCHAIN)
-
-> ⚠️ **HƯỚNG DẪN DÀNH CHO CON CHAT / AI AGENT KHI ĐỌC TÀI LIỆU NÀY:**
-> 1. Xác định bạn đang thực hiện tác vụ cho **BẠN THUẬN (Backend SQLite)** hay **BẠN LÂM (Blockchain Smart Contract)**.
-> 2. **Tuyệt đối không chỉnh sửa (DO NOT MODIFY)** các file nằm ngoài phạm vi phân quyền của người đó.
-> 3. Tuân thủ chính xác 100% các định dạng JSON Request/Response, quy tắc băm SHA-256 và chữ ký hàm bên dưới.
-> 4. Sau khi viết code xong, bắt buộc chạy câu lệnh kiểm thử (Acceptance Test Command) tương ứng trước khi báo hoàn thành.
+# 🌳 TÀI LIỆU ĐẶC TẢ KỸ THUẬT & PHÂN CÔNG NHIỆM VỤ CHI TIẾT (MASTER SPECIFICATION)
+## DỰ ÁN: URBANTREE — HỆ THỐNG QUẢN LÝ CÂY XANH ĐÔ THỊ TÍCH HỢP QR CODE & BLOCKCHAIN
+> **Mã học phần:** CNTT2311 | **Phiên bản tài liệu:** v2.0 (Toàn diện & Chi tiết hóa cho AI Coding Assistant)  
+> **Thành viên thực hiện:**  
+> 1. **Trần Quang Lâm (MSSV: 2311074)** — Phụ trách: Blockchain, Smart Contract, Mật mã học (Hashing), Cổng bảo chứng toàn vẹn A18/A19  
+> 2. **Đặng Thế Thuận (MSSV: 2311031)** — Phụ trách: Backend RESTful API, SQLite Database, Nghiệp vụ Cây xanh, Sự cố, Chăm sóc & QR Code  
 
 ---
 
-## 👥 1. PHÂN CHIA VAI TRÒ & PHẠM VI QUYỀN HẠN (STRICT BOUNDARIES)
-
-| Người thực hiện | Vai trò | Thư mục & File TOÀN QUYỀN sửa đổi | Thư mục & File TUYỆT ĐỐI KHÔNG CHẠM |
-|:---|:---|:---|:---|
-| **BẠN THUẬN**<br>`(thethuan)` | **Backend & SQLite Database** | • `backend/src/config/db.js`<br>• `backend/src/models/*`<br>• `backend/src/controllers/*`<br>• `backend/src/routes/treeRoutes.js`<br>• `backend/src/routes/incidentRoutes.js`<br>• `backend/src/routes/careRoutes.js` | ❌ `backend/contracts/*`<br>❌ `backend/test/*`<br>❌ `backend/scripts/*`<br>❌ `backend/src/registry.js`<br>❌ `backend/src/services/*` |
-| **BẠN LÂM**<br>`(tranquanglam)` | **Blockchain & Security** | • `backend/contracts/*`<br>• `backend/test/*`<br>• `backend/scripts/*`<br>• `backend/src/registry.js`<br>• `backend/src/services/*`<br>• `backend/src/routes/blockchainRoutes.js` | ❌ `backend/src/config/db.js`<br>❌ `backend/src/models/*`<br>❌ `backend/src/controllers/*` |
-
-> 🔒 **CÁC FILE DÙNG CHUNG (`backend/package.json`, `backend/src/server.js`):**
-> - Không AI Agent nào được tự ý xóa hoặc ghi đè toàn bộ file.
-> - Khi mount route vào `server.js`, chỉ chèn đúng dòng `app.use(...)` phụ trách của mình.
+## 🧭 HƯỚNG DẪN DÀNH CHO CON CHAT / AI AGENT (PROMPT-DRIVEN DIRECTIVE)
+Khi người dùng yêu cầu con chat thực hiện bất kỳ nhiệm vụ nào trong dự án này:
+1. **Xác định danh tính:** Đọc kỹ xem bạn đang đóng vai trò thực hiện công việc cho **BẠN THUẬN (Thuận)** hay **BẠN LÂM (Lâm)**.
+2. **Quy tắc bất khả xâm phạm:**
+   - AI của Thuận: **CHỈ ĐƯỢC PHÉP** tạo/sửa các file thuộc phạm vi Backend/Database được cấp phép tại **Mục 2**. Tuyệt đối KHÔNG chạm vào thư mục `contracts/`, `test/`, `scripts/`, `registry.js`, `services/blockchainClient.js`.
+   - AI của Lâm: **CHỈ ĐƯỢC PHÉP** tạo/sửa các file thuộc phạm vi Blockchain/Smart Contract được cấp phép tại **Mục 2**. Tuyệt đối KHÔNG chạm vào `config/db.js`, `models/`, `controllers/`.
+3. **Tuân thủ chuẩn dữ liệu:** Khi sinh API hoặc thuật toán băm, bắt buộc đối chiếu với **Mục 3 (Chuẩn băm SHA-256)** và **Mục 4, 5 (Đặc tả JSON Schemas)**.
+4. **Nghiệm thu:** Sau khi viết code, AI phải tự chạy câu lệnh kiểm thử tương ứng được ghi trong tài liệu trước khi thông báo hoàn tất.
 
 ---
 
-## 🔐 2. ĐẶC TẢ THUẬT TOÁN BĂM DỮ LIỆU CHUNG (DATA HASHING STANDARD)
+## 📁 1. KIẾN TRÚC THƯ MỤC DỰ ÁN & MA TRẬN PHÂN QUYỀN FILE
 
-> ⭐️ **QUY TẮC CỐT LÕI ĐỂ BẮT TAY KHÔNG BỊ LỆCH MÃ BĂM (ZERO MISMATCH):**  
-> Cả AI của Thuận và AI của Lâm phải dùng chung một định dạng chuỗi trước khi băm SHA-256.
+```
+d:\TQLCNTT2311074\Nam4HK1\GUI\Da4\backend\
+│
+├── contracts/                               👉 [QUYỀN HẠN: LÂM]
+│   └── UrbanTreeRegistry.sol                # Hợp đồng thông minh lưu trữ bản ghi bất biến
+│
+├── scripts/                                 👉 [QUYỀN HẠN: LÂM]
+│   └── deploy.js                            # Script triển khai hợp đồng & sinh deployed-contract.json
+│
+├── test/                                    👉 [QUYỀN HẠN: LÂM]
+│   └── UrbanTreeRegistry.test.js            # Bộ test Hardhat toàn diện (8+ test cases)
+│
+├── deployed-contract.json                   👉 [QUYỀN HẠN: LÂM] Lưu địa chỉ contract & abi sau deploy
+├── hardhat.config.js                        👉 [QUYỀN HẠN: LÂM] Cấu hình Hardhat EVM Localhost
+│
+├── src/
+│   ├── config/                              👉 [QUYỀN HẠN: THUẬN]
+│   │   └── db.js                            # Kết nối SQLite, DDL khởi tạo các bảng & dữ liệu mẫu
+│   │
+│   ├── models/                              👉 [QUYỀN HẠN: THUẬN]
+│   │   ├── Tree.js                          # Thao tác SQL bảng trees
+│   │   ├── Incident.js                      # Thao tác SQL bảng incidents
+│   │   └── CareRecord.js                    # Thao tác SQL bảng care_records
+│   │
+│   ├── controllers/                         👉 [QUYỀN HẠN: THUẬN]
+│   │   ├── treeController.js                # Nghiệp vụ Cây xanh, tìm kiếm, xuất mã QR
+│   │   ├── incidentController.js            # Nghiệp vụ tiếp nhận & điều phối sự cố
+│   │   └── careController.js                # Nghiệp vụ nhật ký bảo dưỡng thực địa
+│   │
+│   ├── services/                            👉 [QUYỀN HẠN: LÂM]
+│   │   ├── hashService.js                   # Thuật toán chuẩn hóa chuỗi và tính mã băm SHA-256
+│   │   └── blockchainClient.js              # Khởi tạo Ethers.js kết nối ví & Smart Contract
+│   │
+│   ├── routes/
+│   │   ├── treeRoutes.js                    👉 [QUYỀN HẠN: THUẬN] Router API Cây xanh & QR
+│   │   ├── incidentRoutes.js                👉 [QUYỀN HẠN: THUẬN] Router API Sự cố
+│   │   ├── careRoutes.js                    👉 [QUYỀN HẠN: THUẬN] Router API Chăm sóc
+│   │   └── blockchainRoutes.js              👉 [QUYỀN HẠN: LÂM] Router API Neo dữ liệu & Verify
+│   │
+│   ├── registry.js                          👉 [QUYỀN HẠN: LÂM] Logic giao tiếp hợp đồng thông minh
+│   └── server.js                            🔒 [DÙNG CHUNG: CHỈ MOUNT ROUTER - KHÔNG VIẾT LOGIC]
+│
+├── package.json                             🔒 [DÙNG CHUNG: KHÔNG GHI ĐÈ BỪA BÃI]
+├── package-lock.json                        🔒 [DÙNG CHUNG: SINH TỰ ĐỘNG QUA NPM INSTALL]
+└── urbantree.db                             ⚙️ [FILE CƠ SỞ DỮ LIỆU SQLITE - ĐÃ IGNORE TRÊN GIT]
+```
 
+---
+
+## 🔐 2. TIÊU CHUẨN MẬT MÃ HỌC & BẢO CHỨNG BLOCKCHAIN (CRYPTOGRAPHIC SPEC)
+
+Hệ thống UrbanTree sử dụng mô hình bảo chứng **Hybrid Architecture (Off-chain Data + On-chain Merkle/SHA-256 Anchor)**:
+- Dữ liệu chi tiết (ảnh chụp, mô tả dài, thông tin người báo) được lưu trong **SQLite Off-chain** để tiết kiệm chi phí và tối ưu tốc độ đọc/ghi.
+- Một chuỗi mã băm đại diện duy nhất (64 ký tự Hex SHA-256) được neo lên **Smart Contract On-chain**.
+
+### 2.1. Quy tắc ghép chuỗi băm cho 3 loại bản ghi (Hashing Rules)
+Để đảm bảo bên Thuận (DB) và bên Lâm (Blockchain) luôn tính ra mã băm trùng khớp 100% (Zero Mismatch), cả 2 bên **bắt buộc** áp dụng quy tắc ghép chuỗi nối bằng ký tự phân cách gạch đứng `|`:
+
+#### A. Bản ghi Hồ sơ Cây xanh (`TREE_PROFILE`):
 ```javascript
-// Chuỗi chuẩn hóa trước khi băm:
-const rawDataString = `${tree_code}|${species}|${location_name}|${latitude}|${longitude}|${planted_date}`;
+// Cú pháp ghép chuỗi:
+const rawTreeString = `${tree_code}|${species}|${location_name}|${latitude}|${longitude}|${planted_date}`;
 
-// Thuật toán băm: SHA-256 xuất ra 64 ký tự Hex chữ thường
-const dataHash = crypto.createHash('sha256').update(rawDataString).digest('hex');
+// Ví dụ:
+// "TREE-001|Cây Bàng Đài Loan|Công viên 23/9, Q.1, TP.HCM|10.7684|106.6934|2023-01-15"
+// -> Hash SHA-256: 64 ký tự hex chữ thường
 ```
 
-- **Ví dụ mẫu:**
-  - `rawDataString`: `TREE-001|Cây Bàng Đài Loan|Công viên 23/9, Q.1, TP.HCM|10.7684|106.6934|2023-01-15`
-  - `dataHash`: chuỗi 64 ký tự hex đại diện cho hồ sơ gốc trên chuỗi khối.
+#### B. Bản ghi Nhật ký Chăm sóc (`CARE_LOG`):
+```javascript
+// Cú pháp ghép chuỗi:
+const rawCareString = `${tree_id}|${caretaker_name}|${action_type}|${action_date}`;
+
+// Ví dụ:
+// "1|Đội Cơ Động 1|Cắt tỉa|2026-11-04 10:00:00"
+```
+
+#### C. Bản ghi Nghiệm thu Sự cố (`INCIDENT_REPORT`):
+```javascript
+// Cú pháp ghép chuỗi:
+const rawIncidentString = `${incident_id}|${tree_id}|${severity}|${status}|${resolved_at}`;
+
+// Ví dụ:
+// "5|1|Khẩn cấp|Đã hoàn thành|2026-11-04 11:30:00"
+```
 
 ---
 
-## 📋 3. CHI TIẾT NHIỆM VỤ DÀNH CHO AI CỦA BẠN THUẬN (BACKEND & SQLITE)
+## 🌳 3. ĐẶC TẢ CHI TIẾT 6 NHIỆM VỤ CỦA BẠN THUẬN (BACKEND & SQLITE)
 
-### 📌 Task `THUAN-01`: Cấu trúc Database SQLite chuẩn
+### 📌 Nhiệm vụ THUAN-01: Tối ưu Cơ sở dữ liệu SQLite & DDL Schemas
 - **File:** `backend/src/config/db.js`
-- **Yêu cầu triển khai:**
-  - Bảng `trees`: `id`, `tree_code` (UNIQUE), `species`, `location_name`, `latitude`, `longitude`, `planted_date`, `health_status`, `qr_code_url`, `data_hash`, `created_at`, `updated_at`.
-  - Bảng `incidents`: `id`, `tree_id`, `reporter_name`, `reporter_phone`, `description`, `image_url`, `severity` (Thấp/Trung bình/Cao/Khẩn cấp), `status` (Chờ xử lý/Đang xử lý/Đã hoàn thành), `reported_at`.
-  - Bảng `care_records`: `id`, `tree_id`, `caretaker_name`, `action_type` (Tưới nước/Bón phân/Cắt tỉa/Trị sâu bệnh), `notes`, `action_date`.
-
-### 📌 Task `THUAN-02`: API Quản lý Cây xanh (CRUD Tree)
-- **Files:** `backend/src/models/Tree.js`, `backend/src/controllers/treeController.js`, `backend/src/routes/treeRoutes.js`
-- **Đặc tả Endpoints:**
-  1. `GET /api/trees` — Lấy danh sách cây (hỗ trợ query param `?species=...&status=...`).
-     - **Response:** `{ success: true, count: number, data: [...] }`
-  2. `GET /api/trees/:id` — Lấy chi tiết cây theo `id` hoặc `tree_code`.
-     - **Response:** `{ success: true, data: { ... } }` (404 nếu không tìm thấy).
-  3. `POST /api/trees` — Thêm cây xanh mới.
-     - **Body:** `{ "tree_code": "TREE-004", "species": "Cây Sao Đen", "location_name": "Đường Lê Duẩn, Q.1", "latitude": 10.7801, "longitude": 106.6992, "planted_date": "2024-02-10", "health_status": "Tốt" }`
-     - **Xử lý:** Tự động gọi thư viện `qrcode` để sinh mã QR Base64 lưu vào trường `qr_code_url`.
-     - **Response:** `{ success: true, message: "Thêm cây xanh thành công", data: { id, ... } }` (Status 201).
-  4. `PUT /api/trees/:id` — Cập nhật thông tin cây.
-  5. `DELETE /api/trees/:id` — Xóa cây xanh.
-
-### 📌 Task `THUAN-03`: API Tiếp nhận Sự cố Cây xanh (Incidents)
-- **Files:** `backend/src/models/Incident.js`, `backend/src/controllers/incidentController.js`, `backend/src/routes/incidentRoutes.js`
-- **Đặc tả Endpoints:**
-  1. `GET /api/incidents` — Lấy danh sách toàn bộ phản ánh sự cố.
-  2. `POST /api/incidents` — Người dân / nhân viên báo sự cố.
-     - **Body:** `{ "tree_id": 1, "reporter_name": "Nguyễn Văn A", "reporter_phone": "0901234567", "description": "Cành cây sà sát dây điện có nguy cơ chập", "image_url": "https://...", "severity": "Cao" }`
-     - **Response:** `{ success: true, message: "Gửi phản ánh sự cố thành công", data: { id, ... } }`
-  3. `PATCH /api/incidents/:id/status` — Đội cứu hộ cập nhật trạng thái (`status`: "Đang xử lý" | "Đã hoàn thành").
-
-### 📌 Task `THUAN-04`: API Nhật ký Chăm sóc Thực địa (Care Records)
-- **Files:** `backend/src/models/CareRecord.js`, `backend/src/controllers/careController.js`, `backend/src/routes/careRoutes.js`
-- **Đặc tả Endpoints:**
-  1. `GET /api/care-records` — Lấy lịch sử chăm sóc (cho phép query `?tree_id=...`).
-  2. `POST /api/care-records` — Ghi nhận nhật ký sau khi nhân viên làm việc xong ngoài hiện trường.
-     - **Body:** `{ "tree_id": 1, "caretaker_name": "Đội Cơ Động 1", "action_type": "Cắt tỉa", "notes": "Đã cắt 3 nhánh lớn nguy hiểm" }`
-     - **Response:** `{ success: true, message: "Lưu nhật ký chăm sóc thành công", data: { id, ... } }`
-
-### 📌 Lệnh kiểm thử dành cho AI của Thuận:
-```powershell
-# Chạy server thử nghiệm
-npm start
-# Kiểm tra endpoint
-curl http://localhost:5001/api/trees
-curl http://localhost:5001/api/incidents
-curl http://localhost:5001/api/care-records
-```
-
----
-
-## ⛓️ 4. CHI TIẾT NHIỆM VỤ DÀNH CHO AI CỦA BẠN LÂM (BLOCKCHAIN & SECURITY)
-
-### 📌 Task `LAM-01`: Smart Contract Bảo chứng Toàn vẹn (`UrbanTreeRegistry.sol`)
-- **File:** `backend/contracts/UrbanTreeRegistry.sol`
-- **Yêu cầu kỹ thuật:**
-  - Chức năng `anchorRecord(string recordId, string recordType, string dataHash) external onlyAuthorized`:
-    - Ghi nhận mã băm lên chuỗi, lưu `timestamp`, `recorder`, đánh dấu `exists = true`.
-    - Chống ghi đè: Báo lỗi `"UrbanTree: Record already anchored (Tampering prevented)"` nếu `recordId` đã tồn tại.
-  - Chức năng `verifyRecord(string recordId, string currentHash) external view returns (bool isValid, bool isExisted, uint256 timestamp, address recorder, string dataHash)`:
-    - Trả về `isValid = true` khi `currentHash == stored.dataHash`.
-    - Trả về `isValid = false` khi hash không khớp (phát hiện giả mạo database).
-  - Phân quyền: Owner có quyền gọi `authorizeRecorder(address staffWallet)` để cấp quyền cho nhân viên.
-
-### 📌 Task `LAM-02`: Bộ Kiểm thử Tự động Smart Contract (Hardhat Test)
-- **File:** `backend/test/UrbanTreeRegistry.test.js`
-- **Tiêu chuẩn hoàn thành:** Chạy `npx hardhat test` đạt tối thiểu 8/8 test passed:
-  1. Khởi tạo & phân quyền owner
-  2. Cấp quyền ví nhân viên
-  3. Chặn ví không có quyền ghi dữ liệu
-  4. Nhân viên ghi dấu bản ghi thành công
-  5. Chặn hacker ghi đè dữ liệu cây đã có
-  6. Đối chiếu dữ liệu chuẩn $\rightarrow$ `isValid = true`
-  7. Đối chiếu dữ liệu bị sửa lén $\rightarrow$ `isValid = false`
-  8. Kiểm tra tổng số bản ghi chuỗi
-
-### 📌 Task `LAM-03`: Module Băm Dữ liệu Chuẩn hóa (Hash Service)
-- **File:** `backend/src/services/hashService.js`
-- **Nội dung:** Export hàm `hashTreeData(treeObject)` tuân thủ đúng chuẩn băm mục 2.
-
-### 📌 Task `LAM-04`: API Neo Dữ liệu Lên Blockchain (Anchor Record)
-- **File:** `backend/src/registry.js` (hoặc `backend/src/routes/blockchainRoutes.js`)
-- **Đặc tả Endpoint:** `POST /api/record`
-  - **Body:** `{ "recordId": "TREE-001", "recordType": "TREE_PROFILE", "dataHash": "64_hex_chars..." }`
-  - **Xử lý:** Ký giao dịch gửi lên Smart Contract, đợi transaction đào xong.
-  - **Response:** `{ "status": "ok", "txHash": "0x..." }` (400 nếu lỗi hoặc bị trùng lặp).
-
-### 📌 Task `LAM-05`: API Cổng Đối chiếu & Phát hiện Gian lận (Verify Gate A19)
-- **File:** `backend/src/registry.js`
-- **Đặc tả Endpoint:** `GET /api/verify/:id`
-  - **Query:** `?currentHash=...` (tính toán từ DB thực tế)
-  - **Xử lý:** Gọi `contract.verifyRecord(id, currentHash)`.
-  - **Response:**
-    ```json
-    {
-      "isValid": true,
-      "isExisted": true,
-      "timestamp": 1730000000,
-      "recorder": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-      "dataHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    }
+- **Yêu cầu chi tiết:**
+  - Kích hoạt chế độ Foreign Keys trong SQLite: `PRAGMA foreign_keys = ON;`.
+  - Tạo bảng `trees` với đầy đủ các cột:
+    ```sql
+    CREATE TABLE IF NOT EXISTS trees (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tree_code TEXT UNIQUE NOT NULL,
+      species TEXT NOT NULL,
+      location_name TEXT NOT NULL,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      planted_date TEXT NOT NULL,
+      health_status TEXT DEFAULT 'Tốt' CHECK(health_status IN ('Tốt', 'Bình thường', 'Cần chăm sóc', 'Sâu bệnh', 'Nguy hiểm')),
+      qr_code_url TEXT,
+      data_hash TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS idx_tree_code ON trees(tree_code);
+    ```
+  - Tạo bảng `incidents`:
+    ```sql
+    CREATE TABLE IF NOT EXISTS incidents (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tree_id INTEGER,
+      reporter_name TEXT NOT NULL,
+      reporter_phone TEXT NOT NULL,
+      description TEXT NOT NULL,
+      image_url TEXT,
+      severity TEXT DEFAULT 'Trung bình' CHECK(severity IN ('Thấp', 'Trung bình', 'Cao', 'Khẩn cấp')),
+      status TEXT DEFAULT 'Chờ xử lý' CHECK(status IN ('Chờ xử lý', 'Đang xử lý', 'Đã hoàn thành', 'Từ chối')),
+      reported_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      resolved_at DATETIME,
+      FOREIGN KEY (tree_id) REFERENCES trees(id) ON DELETE SET NULL
+    );
+    ```
+  - Tạo bảng `care_records`:
+    ```sql
+    CREATE TABLE IF NOT EXISTS care_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tree_id INTEGER NOT NULL,
+      caretaker_name TEXT NOT NULL,
+      action_type TEXT NOT NULL CHECK(action_type IN ('Tưới nước', 'Bón phân', 'Cắt tỉa', 'Trị sâu bệnh', 'Gia cố cọc')),
+      notes TEXT,
+      action_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (tree_id) REFERENCES trees(id) ON DELETE CASCADE
+    );
     ```
 
-### 📌 Lệnh kiểm thử dành cho AI của Lâm:
-```powershell
-# Chạy toàn bộ test hợp đồng thông minh
-npx hardhat test
+---
 
-# Khởi chạy node Hardhat cục bộ
-npx hardhat node
+### 📌 Nhiệm vụ THUAN-02: Hoàn thiện Model & Controller Cây xanh (CRUD & GIS)
+- **Files:** `backend/src/models/Tree.js`, `backend/src/controllers/treeController.js`
+- **Chi tiết các hàm trong Model `Tree.js`:**
+  - `getAll({ species, health_status, limit, offset }, callback)`: Hỗ trợ phân trang và bộ lọc linh hoạt.
+  - `getById(id, callback)`: Tìm cây theo ID số.
+  - `getByCode(tree_code, callback)`: Tìm cây theo mã QR `tree_code`.
+  - `create(treeData, callback)`: Chèn bản ghi cây mới.
+  - `update(id, treeData, callback)`: Cập nhật thông tin sinh thái của cây.
+  - `updateHash(id, data_hash, callback)`: Cập nhật mã băm SHA-256 sau khi neo chuỗi.
+  - `delete(id, callback)`: Xóa cây khỏi hệ thống.
+  - `getNearby(lat, lng, radiusKm, callback)`: Lọc danh sách cây trong phạm vi bán kính (phục vụ bản đồ GIS A05).
 
-# Deploy hợp đồng lên mạng nội bộ
-npx hardhat run scripts/deploy.js --network localhost
+---
+
+### 📌 Nhiệm vụ THUAN-03: Tự động hóa Sinh mã QR & Xuất ảnh
+- **File:** `backend/src/controllers/treeController.js`
+- **Logic thực hiện:**
+  - Sử dụng thư viện `qrcode`:
+    ```javascript
+    const QRCode = require('qrcode');
+    ```
+  - Khi người dùng gửi `POST /api/trees` tạo cây mới:
+    1. Tự sinh nội dung QR chuẩn định dạng JSON:
+       ```json
+       {
+         "app": "UrbanTree",
+         "code": "TREE-001",
+         "verifyUrl": "https://urbantree.hcm.gov.vn/verify/TREE-001"
+       }
+       ```
+    2. Chuyển thành DataURL (Base64 PNG): `await QRCode.toDataURL(JSON.stringify(payload), { errorCorrectionLevel: 'H', width: 400 });`.
+    3. Tự động lưu chuỗi Base64 này vào cột `qr_code_url` của bảng `trees`.
+  - Viết endpoint `GET /api/trees/:id/qr`:
+    - Trả về trực tiếp buffer hình ảnh PNG để ứng dụng Web/Mobile hiển thị hoặc in ấn nhãn kim loại.
+
+---
+
+### 📌 Nhiệm vụ THUAN-04: API Tiếp nhận Phản ánh Sự cố (Incident Management)
+- **Files:** `backend/src/models/Incident.js`, `backend/src/controllers/incidentController.js`
+- **Danh sách Endpoint:**
+  1. `POST /api/incidents`: Người dân quét QR hoặc bật GPS gửi sự cố.
+     - **Request Body:**
+       ```json
+       {
+         "tree_id": 1,
+         "reporter_name": "Trần Thị Mai",
+         "reporter_phone": "0988776655",
+         "description": "Cành sà sát lưới điện có tia lửa",
+         "image_url": "https://img.urbantree.vn/inc-01.jpg",
+         "severity": "Khẩn cấp"
+       }
+       ```
+     - **Response:** HTTP 201 `{ success: true, message: "Tiếp nhận phản ánh thành công. Đội cứu hộ đang điều phối.", incident_id: 12 }`.
+  2. `GET /api/incidents`: Quản trị viên lọc sự cố theo trạng thái (`?status=Chờ xử lý`).
+  3. `PATCH /api/incidents/:id/status`:
+     - **Request Body:** `{ "status": "Đã hoàn thành", "resolved_at": "2026-11-04 14:00:00" }`
+     - **Xử lý:** Cập nhật DB và sẵn sàng để bên Blockchain đóng dấu nghiệm thu.
+
+---
+
+### 📌 Nhiệm vụ THUAN-05: API Quản lý Nhật ký Chăm sóc Thực địa (Care Records)
+- **Files:** `backend/src/models/CareRecord.js`, `backend/src/controllers/careController.js`
+- **Danh sách Endpoint:**
+  1. `POST /api/care-records`: Nhân viên công viên quét QR cập nhật công việc vừa làm.
+     - **Request Body:**
+       ```json
+       {
+         "tree_id": 1,
+         "caretaker_name": "Tổ Chăm Sóc 3 - Công viên 23/9",
+         "action_type": "Cắt tỉa",
+         "notes": "Hạ thấp độ cao 2m phòng chống giông bão tháng 11"
+       }
+       ```
+     - **Response:** HTTP 201 `{ success: true, care_id: 45, message: "Đã lưu nhật ký bảo dưỡng thực địa" }`.
+  2. `GET /api/care-records?tree_id=1`: Lấy toàn bộ lịch sử chăm sóc của một cây cụ thể để hiển thị lên dòng thời gian (Timeline M09 / A11).
+
+---
+
+### 📌 Nhiệm vụ THUAN-06: Tách File Routes & Chuẩn hóa Module
+- **Yêu cầu:** Không để dồn tất cả routes vào 1 file `api.js` duy nhất nữa. Tách ra thành 3 file độc lập:
+  - `backend/src/routes/treeRoutes.js`
+  - `backend/src/routes/incidentRoutes.js`
+  - `backend/src/routes/careRoutes.js`
+- **Cách đăng ký vào `server.js`:**
+  ```javascript
+  const treeRoutes = require('./routes/treeRoutes');
+  const incidentRoutes = require('./routes/incidentRoutes');
+  const careRoutes = require('./routes/careRoutes');
+
+  app.use('/api/trees', treeRoutes);
+  app.use('/api/incidents', incidentRoutes);
+  app.use('/api/care-records', careRoutes);
+  ```
+
+---
+
+## ⛓️ 4. ĐẶC TẢ CHI TIẾT 6 NHIỆM VỤ CỦA BẠN LÂM (BLOCKCHAIN & SECURITY)
+
+### 📌 Nhiệm vụ LAM-01: Smart Contract `UrbanTreeRegistry.sol`
+- **File:** `backend/contracts/UrbanTreeRegistry.sol`
+- **Bản thiết kế cấu trúc Smart Contract chuẩn:**
+  ```solidity
+  // SPDX-License-Identifier: MIT
+  pragma solidity ^0.8.20;
+
+  contract UrbanTreeRegistry {
+      struct Record {
+          string recordId;       // Mã định danh (VD: "TREE-001", "CARE-45")
+          string recordType;     // Loại bản ghi: "TREE_PROFILE", "CARE_LOG", "INCIDENT_REPORT"
+          string dataHash;       // Mã băm SHA-256 (64 hex characters)
+          uint256 timestamp;     // Thời điểm ghi bất biến trên blockchain
+          address recorder;      // Địa chỉ ví người thực hiện giao dịch
+          bool exists;           // Cờ đánh dấu đã tồn tại (chống ghi đè)
+      }
+
+      address public owner;
+      mapping(address => bool) public authorizedRecorders;
+      mapping(string => Record) private records;
+      string[] private recordIds;
+
+      event RecordAnchored(string indexed recordId, string recordType, string dataHash, uint256 timestamp, address indexed recorder);
+      event RecorderAuthorized(address indexed account);
+      event RecorderRevoked(address indexed account);
+
+      modifier onlyOwner() {
+          require(msg.sender == owner, "UrbanTree: Caller is not owner");
+          _;
+      }
+
+      modifier onlyAuthorized() {
+          require(msg.sender == owner || authorizedRecorders[msg.sender], "UrbanTree: Caller not authorized");
+          _;
+      }
+
+      constructor() {
+          owner = msg.sender;
+      }
+
+      function authorizeRecorder(address account) external onlyOwner {
+          authorizedRecorders[account] = true;
+          emit RecorderAuthorized(account);
+      }
+
+      function revokeRecorder(address account) external onlyOwner {
+          authorizedRecorders[account] = false;
+          emit RecorderRevoked(account);
+      }
+
+      function anchorRecord(string calldata recordId, string calldata recordType, string calldata dataHash) external onlyAuthorized {
+          require(bytes(recordId).length > 0, "UrbanTree: Empty recordId");
+          require(bytes(dataHash).length == 64, "UrbanTree: Invalid SHA-256 hash length");
+          require(!records[recordId].exists, "UrbanTree: Record already anchored (Tampering prevented)");
+
+          records[recordId] = Record(recordId, recordType, dataHash, block.timestamp, msg.sender, true);
+          recordIds.push(recordId);
+
+          emit RecordAnchored(recordId, recordType, dataHash, block.timestamp, msg.sender);
+      }
+
+      function verifyRecord(string calldata recordId, string calldata currentHash) external view returns (
+          bool isValid,
+          bool isExisted,
+          uint256 timestamp,
+          address recorder,
+          string memory storedHash
+      ) {
+          Record memory rec = records[recordId];
+          if (!rec.exists) {
+              return (false, false, 0, address(0), "");
+          }
+          bool valid = (keccak256(bytes(rec.dataHash)) == keccak256(bytes(currentHash)));
+          return (valid, true, rec.timestamp, rec.recorder, rec.dataHash);
+      }
+
+      function getRecord(string calldata recordId) external view returns (Record memory) {
+          require(records[recordId].exists, "UrbanTree: Record not found");
+          return records[recordId];
+      }
+
+      function getRecordCount() external view returns (uint256) {
+          return recordIds.length;
+      }
+
+      function getAllRecordIds() external view returns (string[] memory) {
+          return recordIds;
+      }
+  }
+  ```
+
+---
+
+### 📌 Nhiệm vụ LAM-02: Bộ Kiểm thử Toàn diện Tự động (Hardhat Tests)
+- **File:** `backend/test/UrbanTreeRegistry.test.js`
+- **Bộ 8 kịch bản kiểm thử bắt buộc (Pass 100%):**
+  1. `Test 1.1`: Deploy hợp đồng thành công và gán đúng quyền `owner`.
+  2. `Test 1.2`: Owner cấp quyền cho ví nhân viên hiện trường `staffWallet`.
+  3. `Test 1.3`: Chặn ví không có quyền (`unauthorizedWallet`) cố tình cấp quyền.
+  4. `Test 2.1`: Nhân viên ghi dấu bản ghi hồ sơ cây (`anchorRecord`) thành công.
+  5. `Test 2.2`: Hacker không có quyền ghi dấu bị chặn với revert message chính xác.
+  6. `Test 2.3`: **CHỐNG GIAN LẬN HỒI TỐ:** Cố tình ghi đè lên mã cây đã tồn tại sẽ bị từ chối ngay lập tức.
+  7. `Test 3.1`: **XÁC MINH HỢP LỆ (TÍCH XANH):** Gửi `currentHash` trùng khớp với hash trên chuỗi $\rightarrow$ Trả về `isValid = true`.
+  8. `Test 3.2`: **PHÁT HIỆN GIAN LẬN (CẢNH BÁO ĐỎ):** Dữ liệu SQLite bị sửa đổi lén $\rightarrow$ Sinh ra hash khác $\rightarrow$ Trả về `isValid = false`.
+
+---
+
+### 📌 Nhiệm vụ LAM-03: Xây dựng Module Dịch vụ Băm (`hashService.js`)
+- **File:** `backend/src/services/hashService.js`
+- **Mã nguồn yêu cầu:**
+  ```javascript
+  const crypto = require('crypto');
+
+  /**
+   * Tính mã băm SHA-256 từ thông tin đối tượng cây xanh
+   * @param {Object} tree { tree_code, species, location_name, latitude, longitude, planted_date }
+   * @returns {string} Chuỗi mã băm 64 ký tự Hex
+   */
+  function hashTreeProfile(tree) {
+      if (!tree || !tree.tree_code || !tree.species) {
+          throw new Error("Dữ liệu cây không hợp lệ để tính mã băm");
+      }
+      const rawString = `${tree.tree_code}|${tree.species}|${tree.location_name}|${Number(tree.latitude)}|${Number(tree.longitude)}|${tree.planted_date}`;
+      return crypto.createHash('sha256').update(rawString).digest('hex');
+  }
+
+  /**
+   * Tính mã băm SHA-256 cho nhật ký chăm sóc
+   */
+  function hashCareLog(care) {
+      const rawString = `${care.tree_id}|${care.caretaker_name}|${care.action_type}|${care.action_date}`;
+      return crypto.createHash('sha256').update(rawString).digest('hex');
+  }
+
+  module.exports = {
+      hashTreeProfile,
+      hashCareLog
+  };
+  ```
+
+---
+
+### 📌 Nhiệm vụ LAM-04: Xây dựng Module Kết nối Blockchain (`blockchainClient.js`)
+- **File:** `backend/src/services/blockchainClient.js`
+- **Yêu cầu chi tiết:**
+  - Khởi tạo `ethers.JsonRpcProvider('http://127.0.0.1:8545')`.
+  - Quản lý ví Private Key an toàn từ biến môi trường `process.env.DEPLOYER_PRIVATE_KEY` (hoặc fallback ví mặc định của node dev).
+  - Tự động nạp ABI và `contractAddress` từ file `deployed-contract.json`.
+  - Cung cấp 2 hàm tiện ích bất đồng bộ:
+    - `anchor(recordId, recordType, dataHash)`: Thực hiện ký và chờ xác nhận khối (Receipt confirmation).
+    - `verify(recordId, currentHash)`: Gọi hàm view không tốn gas, trả về kết quả kiểm toán.
+
+---
+
+### 📌 Nhiệm vụ LAM-05: API Neo & Đối chiếu Xác minh (Registry Endpoints)
+- **File:** `backend/src/routes/blockchainRoutes.js` (hoặc `backend/src/registry.js`)
+- **Đặc tả Endpoints:**
+  1. `POST /api/blockchain/anchor`:
+     - **Request Body:** `{ "recordId": "TREE-001", "recordType": "TREE_PROFILE", "dataHash": "e3b0c44..." }`
+     - **Response thành công:** `{ "status": "success", "txHash": "0x123...", "blockNumber": 104 }`
+     - **Response lỗi:** HTTP 400 `{ "status": "error", "message": "Bản ghi đã tồn tại trên Blockchain hoặc ví không có quyền" }`
+  2. `GET /api/blockchain/verify/:recordId`:
+     - **Query Param:** `?currentHash=e3b0c44...`
+     - **Response:**
+       ```json
+       {
+         "recordId": "TREE-001",
+         "isValid": true,
+         "isExisted": true,
+         "timestamp": 1730700000,
+         "dateFormatted": "2026-11-04 10:30:00",
+         "recorder": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+         "storedHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+         "currentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+         "auditStatus": "VERIFIED_INTEGRITY_MATCH"
+       }
+       ```
+  3. `GET /api/blockchain/explorer`:
+     - Trả về danh sách tất cả các bản ghi đã neo trên chuỗi để phục vụ màn hình **A18 Blockchain Activity Explorer**.
+
+---
+
+### 📌 Nhiệm vụ LAM-06: Tích hợp Đăng ký Router vào `server.js`
+- **File:** `backend/src/server.js`
+- **Cách gắn router:**
+  ```javascript
+  const blockchainRoutes = require('./routes/blockchainRoutes');
+  app.use('/api/blockchain', blockchainRoutes);
+  ```
+
+---
+
+## 🔄 5. KỊCH BẢN BẮT TAY END-TO-END (INTEGRATION SCENARIOS)
+
+```
+       BẠN THUẬN                                                   BẠN LÂM
+(SQLite Database & APIs)                                  (Blockchain & Hash Engine)
+           │                                                           │
+           │  1. Nhận yêu cầu tạo cây mới                             │
+           │  POST /api/trees                                         │
+           │──────────────────────────────────────────────────────────>│
+           │                                                           │  2. Tính SHA-256
+           │                                                           │  hashTreeProfile()
+           │                                                           │  3. Gửi transaction
+           │                                                           │  anchorRecord() lên chuỗi
+           │  4. Trả về txHash & dataHash                              │
+           │<──────────────────────────────────────────────────────────│
+           │  5. Lưu data_hash vào bảng trees                          │
+           │  6. Xuất mã QR cho cây                                    │
+           │                                                           │
+           │                                                           │
+ [Người dân / Thanh tra quét QR]                                       │
+           │  7. Gọi GET /api/blockchain/verify/TREE-001               │
+           │     kèm hash đọc từ SQLite                                │
+           │──────────────────────────────────────────────────────────>│
+           │                                                           │  8. Smart contract đối chiếu
+           │                                                           │  isValid = (dbHash == chainHash)
+           │  9. Hiển thị tích xanh bảo chứng toàn vẹn                 │
+           │<──────────────────────────────────────────────────────────│
 ```
 
 ---
 
-## 🔀 5. QUY TẮC PHỐI HỢP GIT TỰ ĐỘNG DÀNH CHO AI AGENT
+## 🛠️ 6. BỘ LỆNH CHUẨN XÁC DÀNH CHO CON CHAT ĐIỀU HÀNH GIT
 
-Khi người dùng ra lệnh cho AI agent commit và push code:
+Để đảm bảo con chat của cả hai bạn không gây conflict khi push code:
 
-1. **Kiểm tra trạng thái trước khi add:**
-   ```powershell
-   git status
-   ```
-2. **Chỉ `git add` đúng các file trong phạm vi nhiệm vụ của mình:**
-   - AI của Thuận: `git add backend/src/controllers/ backend/src/models/ backend/src/routes/treeRoutes.js ...`
-   - AI của Lâm: `git add backend/contracts/ backend/test/ backend/src/registry.js ...`
-   - **Tuyệt đối KHÔNG gõ `git add .` bừa bãi** khi chưa kiểm tra danh sách file bị sửa đổi.
-3. **Quy chuẩn thông điệp commit (Conventional Commits):**
-   - Thuận: `feat(api): add tree CRUD and qr code generation`
-   - Lâm: `feat(blockchain): implement data verification endpoint`
+### Đối với AI của Bạn Thuận:
+```powershell
+# 1. Luôn đồng bộ main trước
+git checkout main
+git pull origin main
+
+# 2. Tạo nhánh làm việc
+git checkout -b feature/thuan-tree-crud
+
+# 3. CHỈ ADD CÁC FILE THUỘC QUYỀN HẠN CỦA MÌNH
+git add backend/src/config/db.js backend/src/models/ backend/src/controllers/ backend/src/routes/treeRoutes.js backend/src/routes/incidentRoutes.js backend/src/routes/careRoutes.js
+
+# 4. Commit chuẩn conventional
+git commit -m "feat(api): implement tree crud, qr generator and care endpoints"
+
+# 5. Push lên GitHub
+git push -u origin feature/thuan-tree-crud
+```
+
+### Đối với AI của Bạn Lâm:
+```powershell
+# 1. Luôn đồng bộ main trước
+git checkout main
+git pull origin main
+
+# 2. Tạo nhánh làm việc
+git checkout -b feature/lam-blockchain-service
+
+# 3. CHỈ ADD CÁC FILE THUỘC QUYỀN HẠN CỦA MÌNH
+git add backend/contracts/ backend/test/ backend/scripts/ backend/src/services/ backend/src/routes/blockchainRoutes.js backend/src/registry.js
+
+# 4. Commit chuẩn conventional
+git commit -m "feat(blockchain): implement hash service, anchor and verify gate endpoints"
+
+# 5. Push lên GitHub
+git push -u origin feature/lam-blockchain-service
+```
 
 ---
 
-*Tài liệu này là quy chuẩn kỹ thuật chính thức. Bất kỳ AI Agent nào khi tham gia phát triển dự án UrbanTree đều phải tuân thủ tuyệt đối các chỉ dẫn trên.*
+## 🏁 BẢNG TỔNG KẾT TIÊU CHÍ NGHIỆM THU ĐỒ ÁN (ACCEPTANCE CHECKLIST)
+
+| Hạng mục | Tiêu chí đạt | Người nghiệm thu |
+|:---|:---|:---:|
+| **Cơ sở dữ liệu SQLite** | 3 bảng tạo chuẩn, quan hệ Foreign Key chuẩn, tự động chèn 3 cây xanh mẫu | Bạn Thuận |
+| **API Cây xanh & QR** | CRUD hoạt động trơn tru, sinh QR Base64 xem được trên trình duyệt | Bạn Thuận |
+| **API Sự cố & Chăm sóc** | Báo sự cố thành công, cập nhật trạng thái xử lý và lưu nhật ký | Bạn Thuận |
+| **Smart Contract** | 8/8 test Hardhat passed, chống ghi đè thành công, chặn truy cập trái phép | Bạn Lâm |
+| **Mật mã học SHA-256** | Hàm băm đồng nhất cho cả DB và Smart Contract, không lệch dù chỉ 1 ký tự | Bạn Lâm |
+| **Cổng Xác thực A19** | Trả về `isValid: true` khi dữ liệu chuẩn và `isValid: false` khi dữ liệu bị sửa lén | Cả 2 cùng test |
+
+---
+*Tài liệu này là quy chuẩn kỹ thuật độc quyền của nhóm Đồ án UrbanTree. Mọi AI Agent tham gia dự án phải tuyệt đối tuân thủ theo chỉ dẫn này.*
