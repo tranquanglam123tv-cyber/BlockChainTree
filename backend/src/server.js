@@ -6,6 +6,7 @@ const apiRoutes = require('./routes/api');
 const treeRoutes = require('./routes/treeRoutes');
 const incidentRoutes = require('./routes/incidentRoutes');
 const careRoutes = require('./routes/careRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/trees', treeRoutes);
 app.use('/api/incidents', incidentRoutes);
 app.use('/api/care-records', careRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api', apiRoutes);
 
 // Root endpoint kiểm tra trạng thái máy chủ
@@ -28,6 +30,7 @@ app.get('/', (req, res) => {
     status: 'Running',
     version: '1.0.0',
     endpoints: {
+      dashboard: '/api/dashboard/stats',
       trees: '/api/trees',
       incidents: '/api/incidents',
       careRecords: '/api/care-records',

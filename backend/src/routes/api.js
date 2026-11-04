@@ -4,6 +4,12 @@ const router = express.Router();
 const treeController = require('../controllers/treeController');
 const incidentController = require('../controllers/incidentController');
 const careController = require('../controllers/careController');
+const dashboardController = require('../controllers/dashboardController');
+
+// ==========================================
+// 📊 ROUTE THỐNG KÊ DASHBOARD (Figma A04)
+// ==========================================
+router.get('/dashboard/stats', dashboardController.getDashboardStats);
 
 // ==========================================
 // 🌳 ROUTES CÂY XANH (Người 2 - Bạn Thuận)
