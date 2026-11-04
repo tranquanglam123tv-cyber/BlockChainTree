@@ -13,6 +13,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // Khởi tạo các bảng cho cơ sở dữ liệu nếu chưa tồn tại
 db.serialize(() => {
+  // Kích hoạt chế độ Foreign Keys trong SQLite theo chuẩn THUAN-01
+  db.run("PRAGMA foreign_keys = ON;");
+
   // 1. Bảng Trees (Quản lý Cây xanh)
   db.run(`
     CREATE TABLE IF NOT EXISTS trees (
@@ -20,16 +23,19 @@ db.serialize(() => {
       tree_code TEXT UNIQUE NOT NULL,
       species TEXT NOT NULL,
       location_name TEXT NOT NULL,
-      latitude REAL,
-      longitude REAL,
-      planted_date TEXT,
-      health_status TEXT DEFAULT 'Tốt',
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      planted_date TEXT NOT NULL,
+      health_status TEXT DEFAULT 'Tốt' CHECK(health_status IN ('Tốt', 'Bình thường', 'Cần chăm sóc', 'Sâu bệnh', 'Nguy hiểm')),
       qr_code_url TEXT,
       data_hash TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Tạo index cho tree_code để tối ưu tra cứu mã QR
+  db.run(`CREATE INDEX IF NOT EXISTS idx_tree_code ON trees(tree_code);`);
 
   // 2. Bảng Incidents (Tiếp nhận Sự cố từ người dân / nhân viên)
   db.run(`

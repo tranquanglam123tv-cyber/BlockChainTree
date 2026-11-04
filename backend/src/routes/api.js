@@ -9,6 +9,7 @@ const careController = require('../controllers/careController');
 // 🌳 ROUTES CÂY XANH (Người 2 - Bạn Thuận)
 // ==========================================
 router.get('/trees', treeController.getAllTrees);
+router.get('/trees/nearby', treeController.getNearbyTrees);
 router.get('/trees/:id', treeController.getTreeById);
 router.post('/trees', treeController.createTree);
 router.put('/trees/:id', treeController.updateTree);
