@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const apiRoutes = require('./routes/api');
 const treeRoutes = require('./routes/treeRoutes');
+const incidentRoutes = require('./routes/incidentRoutes');
+const careRoutes = require('./routes/careRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -13,7 +15,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Đăng ký API Routes
+// Đăng ký API Routes theo từng Module chuẩn hóa
+app.use('/api/trees', treeRoutes);
+app.use('/api/incidents', incidentRoutes);
+app.use('/api/care-records', careRoutes);
 app.use('/api', apiRoutes);
 
 // Root endpoint kiểm tra trạng thái máy chủ

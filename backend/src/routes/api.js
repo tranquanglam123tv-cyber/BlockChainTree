@@ -20,6 +20,7 @@ router.get('/trees/:id/qr', treeController.generateQrCode);
 // ⚠️ ROUTES SỰ CỐ (Người 2 - Bạn Thuận)
 // ==========================================
 router.get('/incidents', incidentController.getAllIncidents);
+router.get('/incidents/:id', incidentController.getIncidentById);
 router.post('/incidents', incidentController.reportIncident);
 router.patch('/incidents/:id/status', incidentController.updateIncidentStatus);
 
@@ -27,6 +28,7 @@ router.patch('/incidents/:id/status', incidentController.updateIncidentStatus);
 // 💧 ROUTES CHĂM SÓC (Người 2 - Bạn Thuận)
 // ==========================================
 router.get('/care-records', careController.getAllCareRecords);
+router.get('/care-records/:id', careController.getCareRecordById);
 router.post('/care-records', careController.addCareRecord);
 
 // ==========================================
