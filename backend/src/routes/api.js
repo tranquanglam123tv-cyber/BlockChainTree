@@ -29,15 +29,8 @@ router.get('/care-records', careController.getAllCareRecords);
 router.post('/care-records', careController.addCareRecord);
 
 // ==========================================
-// ⛓️ ROUTE BLOCKCHAIN VERIFY (Người 1 - Bạn Lâm sẽ cắm service vào đây)
+// ⛓️ ROUTE BLOCKCHAIN (Người 1 - Bạn Lâm)
+// Các endpoint /api/record, /api/record/:id, /api/verify/:id được xử lý trực tiếp bởi registry.js
 // ==========================================
-router.get('/verify/:tree_id', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Endpoint đối chiếu dữ liệu với Smart Contract (Dành cho Người 1 - Bạn Lâm kết nối)',
-    tree_id: req.params.tree_id,
-    blockchain_status: 'Ready for integration'
-  });
-});
 
 module.exports = router;
