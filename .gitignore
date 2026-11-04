@@ -36,3 +36,9 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Hardhat
+artifacts/
+cache/
+backend/artifacts/
+backend/cache/

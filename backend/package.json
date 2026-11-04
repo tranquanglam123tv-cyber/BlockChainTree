@@ -1,0 +1,24 @@
+{
+    "name": "urbantree-backend",
+    "version": "1.0.0",
+    "description": "UrbanTree Backend & Blockchain Smart Contract (CNTT2311)",
+    "main": "src/server.js",
+    "scripts": {
+        "start": "node src/server.js",
+        "chain:node": "hardhat node",
+        "chain:test": "hardhat test",
+        "chain:deploy": "hardhat run scripts/deploy.js --network localhost"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "ethers": "^6.13.2",
+        "express": "^4.19.2",
+        "qrcode": "^1.5.4",
+        "sqlite3": "^5.1.7"
+    },
+    "devDependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+        "hardhat": "^2.22.10"
+    }
+}
