@@ -1,71 +1,121 @@
 # 🌳 UrbanTree — Hệ thống Quản lý Cây xanh Đô thị (QR Code & Blockchain)
 
-> **Học phần:** Blockchain Cơ bản (CNTT2311)  
-> **Sinh viên thực hiện:** Trần Quang Lâm  
-> **Đề tài:** Số hóa hồ sơ cây xanh đô thị, giám sát quy trình chăm sóc thực địa, tiếp nhận phản ánh sự cố khẩn cấp và bảo chứng toàn vẹn dữ liệu bằng Smart Contract Blockchain.
+> **Học phần:** Đồ án 4 / Blockchain Cơ bản (CNTT2311)  
+> **Nhóm thực hiện (2 thành viên):**  
+> - **Đặng Thế Thuận:** Backend nghiệp vụ, Database (SQLite), RESTful API, Seed data & Postman.  
+> - **Trần Quang Lâm:** Smart Contract (Solidity), Hardhat Local Node, Hash Integrity (SHA-256), Frontend & Tích hợp xác minh.  
+> **Thời gian triển khai:** Kế hoạch 20 ngày (Theo tài liệu chuẩn `URBANTREE_ROADMAP_20_NGAY_2_THANH_VIEN.md`).
 
 ---
 
-## 📌 1. Tổng quan Đề tài
+## 📌 1. Mục tiêu & Vấn đề giải quyết
 
-**UrbanTree** là giải pháp công nghệ toàn diện nhằm giải quyết bài toán quản lý cây xanh đô thị tại TP.HCM:
-1. **Cổng Cây xanh Công cộng (Public Citizen Web - Mobile 390×844):** Người dân quét mã QR trên thân cây để tra cứu lý lịch sinh thái (tuổi cây, loài cây, lượng CO2 hấp thụ) và gửi phản ánh sự cố (cành sà lưới điện, cây nghiêng đổ) kèm định vị GPS và ảnh chụp.
-2. **Cổng Quản trị & Điều phối GIS (Admin Web - Desktop 1440×1024):** Ban quản lý giám sát bản đồ cây xanh thời gian thực, điều phối xe nâng chuyên dụng cứu hộ sự cố trong 60 phút, theo dõi lịch cắt tỉa mùa mưa bão và phê duyệt phân công nhân sự.
-3. **Ứng dụng Tác nghiệp Hiện trường (Flutter Staff App - Mobile 390×844):** Nhân viên cây xanh quét mã QR định danh khi chăm sóc, chụp ảnh đối chứng Trước/Sau và ký số gửi bản ghi lên chuỗi khối (hỗ trợ Offline-First khi mất sóng 4G).
-4. **Bảo chứng Toàn vẹn Dữ liệu (Blockchain EVM / Hardhat Local Node):** Mọi lịch sử chăm sóc, biên bản nghiệm thu và mã băm SHA-256 được lưu trữ bất biến trên Smart Contract, chống chỉnh sửa hồi tố và phát hiện gian lận dữ liệu (Zero Mismatch).
-
----
-
-## 🎨 2. Hệ thống Thiết kế UI/UX (Verdant Starry Night)
-
-Toàn bộ hệ thống giao diện được thiết kế độc quyền theo phong cách **Verdant Starry Night** (lấy cảm hứng từ Vincent van Gogh và sắc xanh đại ngàn đô thị):
-* **Bảng màu Semantic:**
-  * Forest Deep (`#174B36`) & Leaf Green (`#347A50`)
-  * Warm Van Gogh Gold (`#F3E8B2`) & Emerald Mid (`#4C956C`)
-  * Warm Canvas (`#F6F5EC`) & Pale Green Tint (`#E0EBDD`)
-* **Thang tỷ lệ chữ (Typography):** Inter & Plus Jakarta Sans chuẩn công thái học số WCAG AAA.
-
-### 📐 Kiến trúc 7 Hàng Artboard trên Figma:
-* **Hàng 00:** Foundations & Design System Tokens (Palette, Typography Scale, Primitives, Buttons, Inputs, Cards, Sidebar).
-* **Hàng 01:** Xác thực & Khung Quản trị (`A01` Đăng nhập, `A01-S1` Đăng ký công vụ, `A02` Quên mật khẩu, `Admin Shell`, `A03` Profile).
-* **Hàng 02:** Bản đồ GIS & Hồ sơ Cây xanh (`A04` Dashboard, `A05` Bản đồ GIS, `A05-S1` Drawer lọc, `A05-S2` Offline state, `A06` Danh sách cây, `A06-S1` Empty state, `A06-S3` In QR hàng loạt, `A07` Hồ sơ cây 360°, `A07-S1` Tab Blockchain, `A08` Form thêm cây, `A08-S3` Cảnh báo chưa lưu, `A09` Danh mục loài cây, `A10` Quản lý QR, `A10-S2` Spec thẻ nhôm đúc ngoài trời).
-* **Hàng 03:** Điều phối Sự cố & Nhân viên Hiện trường (`A14` Trung tâm sự cố, `A15` Bản đồ điều phối, `A15 Drawer` Chi tiết điều phối, `A15-S1` Phân công đội cơ động, `A15-S2` Từ chối phản ánh, `INC-S6` Lightbox xem ảnh, `A11` Nhật ký chăm sóc, `A12` Chi tiết chăm sóc, `CARE-S1` Lịch tháng chăm sóc, `A16` Danh sách nhân viên, `A17` Chi tiết nhân sự).
-* **Hàng 04:** Kiểm toán & Minh bạch Blockchain (`A18` Sổ cái Blockchain Activity Explorer, `A19` Cổng xác minh toàn vẹn Merkle Hash, `A19-S1` Modal bằng chứng EVM, `A19-S2` Cảnh báo sai lệch Hash Mismatch).
-* **Hàng 05:** Cổng Dịch vụ Công cộng Dành cho Người dân (`P01` Tra cứu QR, `P02` Form báo sự cố, `P03` Tiếp nhận thành công, `P04` Theo dõi tiến độ đang xử lý, `P04-S2` Sự cố đã hoàn tất kèm ảnh Trước/Sau và Đánh giá sao, `PUB-S10` Không tìm thấy sự cố).
-* **Hàng 06:** Ứng dụng Di động Nhân viên Flutter (`M01` Đăng nhập ca trực, `M02` Dashboard nhiệm vụ hôm nay, `M03` Quét QR cây, `M03-S2` Cấp quyền camera, `M04` Chi tiết cây mobile, `M05` Biểu mẫu chăm sóc thực địa, `M05-S3` Hàng đợi đồng bộ Offline, `M06` Danh sách việc cần làm, `M07` Xử lý sự cố, `M08` Nghiệm thu hiện trường, `M09` Lịch sử hoạt động, `M10` Tài khoản & Đăng xuất).
+Dự án **UrbanTree** giải quyết 3 bài toán trọng tâm trong quản trị cây xanh đô thị:
+1. **Định danh số & Tra cứu tức thì qua QR:** Mỗi cây xanh được cấp một mã công khai (`public_code`) và mã QR cố định. Bất kỳ ai (người dân, giám khảo) đều có thể dùng camera điện thoại quét để mở trang thông tin cây, tra cứu tuổi thọ, loài cây và gửi báo cáo sự cố (gãy cành, nghiêng đổ).
+2. **Theo dõi tác nghiệp & Phân công sự cố:** Nhân viên ghi nhận nhật ký chăm sóc/cắt tỉa; Ban quản lý tiếp nhận phản ánh từ người dân và điều phối xử lý theo quy trình rõ ràng.
+3. **Bảo chứng toàn vẹn dữ liệu (Blockchain EVM):** Mọi bản ghi quan trọng (Hồ sơ cây, Nhật ký chăm sóc, Biên bản xử lý sự cố) đều được chuẩn hóa payload, băm SHA-256 và neo mã Hash lên Smart Contract. Hệ thống cung cấp trang **Xác minh toàn vẹn** để phát hiện ngay lập tức nếu dữ liệu trong cơ sở dữ liệu bị chỉnh sửa trái phép (*Zero Mismatch*).
 
 ---
 
-## ⚡ 3. Tính năng Tương tác Prototype (End-to-End Interactive)
+## 🛠️ 2. Công nghệ thực tế của Dự án (Locked Tech Stack)
 
-Dự án đã thiết lập sẵn **246 liên kết Prototype tương tác** với **0 màn hình cụt (Zero Dead Ends)**:
-* **Luồng 1 (Admin Web):** Đăng nhập $\rightarrow$ Dashboard $\rightarrow$ Điều phối GIS $\rightarrow$ Phân công đội cứu hộ $\rightarrow$ Kiểm toán Blockchain.
-* **Luồng 2 (Public Web):** Quét QR thân cây $\rightarrow$ Báo sự cố $\rightarrow$ Nhận mã Ticket $\rightarrow$ Theo dõi tiến độ thời gian thực $\rightarrow$ Xem nghiệm thu ảnh Trước/Sau.
-* **Luồng 3 (Staff App):** Đăng nhập $\rightarrow$ Nhận lệnh khẩn cấp $\rightarrow$ Dẫn đường GPS $\rightarrow$ Cắt tỉa cành nguy hiểm $\rightarrow$ Chụp ảnh đối chứng $\rightarrow$ Ký số đẩy lên Blockchain.
+Theo đúng hiện trạng mã nguồn và quyết định kỹ thuật khóa tại Roadmap:
 
----
-
-## 🛠️ 4. Công nghệ Dự án (Tech Stack)
-
-| Thành phần | Công nghệ sử dụng |
-| :--- | :--- |
-| **Thiết kế UI/UX** | Figma Desktop, FigCli Automation, Design Tokens |
-| **Frontend Web** | React 18, TypeScript, Tailwind CSS, Leaflet GIS |
-| **Mobile App** | Flutter 3.47 (Dart 3.13), Mobile Scanner, Hive (Offline Cache) |
-| **Backend API** | Spring Boot 3 (Java 17), Spring Security, JWT, Spring Data JPA |
-| **Database** | MySQL 8.0, Flyway Database Migration |
-| **Blockchain** | Solidity Smart Contracts, Hardhat Local Node, Ethers.js, SHA-256 |
+| Thành phần | Công nghệ lựa chọn | Ghi chú kỹ thuật |
+| :--- | :--- | :--- |
+| **Backend API** | Node.js (v18+) + Express.js | Gọn nhẹ, hỗ trợ native thư viện Web3/Blockchain. |
+| **Cơ sở dữ liệu** | SQLite 3 (`urbantree.db`) | Lưu trữ cục bộ, dễ đóng gói, không cần cài MySQL rườm rà khi chấm điểm. |
+| **Blockchain** | Solidity (Smart Contract) + Hardhat | Chạy Hardhat Local EVM Node (Localhost:8545), không tốn phí gas thật. |
+| **Web3 Client** | Ethers.js (v6) | Tương tác trực tiếp giữa Backend/Frontend và Smart Contract. |
+| **Tính toàn vẹn** | SHA-256 Canonical Hashing | Chuẩn hóa JSON payload trước khi hash để chống lệch dấu vân tay dữ liệu. |
+| **Mã định danh** | Thư viện `qrcode` | Tạo mã QR động trỏ thẳng về route công khai của từng cây. |
+| **Giao diện người dùng**| Web Responsive (Mobile & Desktop) | Tối ưu hiển thị tốt trên điện thoại cho người dân/nhân viên và máy tính cho Admin. |
 
 ---
 
-## 🚀 5. Lộ trình Triển khai (Roadmap)
+## 🚀 3. Luồng Nghiệp vụ & Kịch bản Trình diễn (Demo Flow)
 
-- [x] **Phase 1: UI/UX & Design System (Figma-First)** — *Hoàn thành 100% (52 màn hình, 246 prototype wires).*
-- [ ] **Phase 2: Backend Architecture & Database** — *Spring Boot 3, MySQL 8, JPA Entities, JWT Authentication.*
-- [ ] **Phase 3: Blockchain Integration** — *Hardhat Smart Contracts, Hash Integrity Verifier.*
-- [ ] **Phase 4: Frontend Web & GIS Map** — *Leaflet OpenStreetMap, Dashboard Bento, Citizen Portal.*
-- [ ] **Phase 5: Flutter Mobile Staff App** — *QR Scanner, Camera Evidence, Offline Sync Queue.*
-- [ ] **Phase 6: Testing & Final Demo Presentation** — *Kịch bản Demo cuối kỳ môn Blockchain cơ bản.*
+1. **Luồng Công cộng (Người dân / Khách vãng lai):**
+   - Quét mã QR trên thân cây $\rightarrow$ Mở trang web lý lịch cây (`/trees/:public_code`).
+   - Bấm **"Gửi phản ánh sự cố"** $\rightarrow$ Điền thông tin + đính kèm vị trí $\rightarrow$ Nhận mã Ticket tra cứu tiến độ.
+
+2. **Luồng Tác nghiệp (Nhân viên hiện trường):**
+   - Đăng nhập $\rightarrow$ Quét mã QR cây cần chăm sóc $\rightarrow$ Nhập nội dung cắt tỉa/bón phân $\rightarrow$ Lưu bản ghi.
+   - Hệ thống tự động băm bản ghi chăm sóc và gửi giao dịch neo Hash lên Smart Contract.
+
+3. **Luồng Quản trị & Điều phối (Admin):**
+   - Xem danh sách cây, danh mục loài cây, thêm mới cây và in mã QR hàng loạt.
+   - Tiếp nhận phản ánh sự cố $\rightarrow$ Cập nhật trạng thái (Tiếp nhận $\rightarrow$ Đang xử lý $\rightarrow$ Đã xử lý).
+
+4. **Luồng Kiểm toán & Xác minh Blockchain (Điểm nhấn đề tài):**
+   - Mở màn hình **Xác minh tính toàn vẹn (Integrity Verifier)**.
+   - Nhập ID hoặc mã cây $\rightarrow$ Hệ thống tính lại mã Hash từ Database hiện tại và đọc mã Hash lưu trên Blockchain.
+   - **Kịch bản Demo 1 (Dữ liệu chuẩn):** Báo trạng thái Xanh lá (Hợp lệ, khớp 100%).
+   - **Kịch bản Demo 2 (Giả lập gian lận):** Cố tình sửa 1 ký tự trong Database $\rightarrow$ Bấm xác minh $\rightarrow$ Báo Đỏ (Cảnh báo: Dữ liệu đã bị can thiệp trái phép!).
 
 ---
-*Bản quyền đề tài thuộc về Nhóm sinh viên CNTT2311 — Đại học Công nghệ TP.HCM.*
+
+## 📂 4. Cấu trúc Dự án
+
+```text
+Da4/
+├── backend/
+│   ├── contracts/             # Smart Contract Solidity (UrbanTreeRegistry.sol)
+│   ├── scripts/               # Script deploy contract (deploy.js)
+│   ├── src/
+│   │   ├── config/            # Cấu hình DB, Blockchain provider
+│   │   ├── controllers/       # Controller xử lý nghiệp vụ (Tree, Care, Incident, Verify)
+│   │   ├── models/            # Schema & truy vấn SQLite
+│   │   ├── routes/            # Khai báo RESTful API endpoints
+│   │   ├── services/          # Hash Service (SHA-256) & Blockchain Service
+│   │   └── server.js          # File khởi chạy ứng dụng Express
+│   ├── hardhat.config.js      # Cấu hình mạng Hardhat EVM local
+│   ├── package.json           # Danh sách dependencies Backend & Blockchain
+│   └── urbantree.db           # File Database SQLite
+├── URBANTREE_ROADMAP_20_NGAY_2_THANH_VIEN.md # Kế hoạch chi tiết 20 ngày
+└── README.md                  # Hướng dẫn tổng quan & khởi chạy hệ thống
+```
+
+---
+
+## ⚡ 5. Hướng dẫn Khởi chạy Hệ thống
+
+### 5.1. Yêu cầu môi trường
+* Node.js phiên bản 18.x hoặc 20.x trở lên.
+* Trình duyệt web hiện đại (Chrome / Edge / Firefox).
+
+### 5.2. Cài đặt thư viện
+Mở Terminal/PowerShell tại thư mục `backend`:
+```powershell
+cd backend
+npm install
+```
+
+### 5.3. Khởi chạy Mạng Blockchain Local (Terminal 1)
+```powershell
+cd backend
+npm run chain:node
+```
+*Lưu ý: Giữ terminal này luôn chạy để duy trì mạng EVM nội bộ (cung cấp 20 tài khoản ví mẫu).*
+
+### 5.4. Biên dịch & Triển khai Smart Contract (Terminal 2)
+```powershell
+cd backend
+npm run chain:deploy
+```
+*Sau khi deploy thành công, file `deployed-contract.json` sẽ được tạo/cập nhật với địa chỉ contract mới nhất.*
+
+### 5.5. Khởi chạy Backend API (Terminal 2 tiếp tục)
+```powershell
+npm run dev
+# Hoặc: npm start
+```
+* Server API sẽ lắng nghe tại: `http://localhost:3000` (hoặc cấu hình trong `.env`).
+* Endpoint kiểm tra trạng thái: `GET http://localhost:3000/api/health`
+
+---
+
+## 👥 6. Phân chia Trách nhiệm (Theo Roadmap)
+
+* **Đặng Thế Thuận (Backend / Database):** Phụ trách toàn bộ CRUD Tree, Incident, Care Logs, SQLite schema, Seed data dữ liệu mẫu và viết API kiểm thử qua Postman.
+* **Trần Quang Lâm (Blockchain / Frontend):** Phụ trách Smart Contract, Hardhat deploy, module băm SHA-256, logic so khớp dữ liệu (Verify) và giao diện Web tích hợp.

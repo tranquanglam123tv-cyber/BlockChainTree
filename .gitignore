@@ -45,3 +45,6 @@ backend/cache/
 
 # Reference Tools
 ponytail/
+
+# Temporary office files
+~$*
