@@ -42,3 +42,9 @@ artifacts/
 cache/
 backend/artifacts/
 backend/cache/
+
+# Reference Tools
+ponytail/
+
+# Temporary office files
+~$*
