@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const apiRoutes = require('./routes/api');
@@ -13,6 +14,12 @@ const PORT = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Phục vụ file tĩnh và trang Verifier (A18/A19)
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/verifier', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'verifier.html'));
+});
 
 // Đăng ký API Routes
 // 1. Database & Nghiệp vụ quản lý cây xanh (Thuận)

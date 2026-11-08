@@ -3,13 +3,13 @@
 > **Mã học phần:** CNTT2311 | **Phiên bản tài liệu:** v2.0 (Toàn diện & Chi tiết hóa cho AI Coding Assistant)  
 > **Thành viên thực hiện:**  
 > 1. **Trần Quang Lâm (MSSV: 2311074)** — Phụ trách: Blockchain, Smart Contract, Mật mã học (Hashing), Cổng bảo chứng toàn vẹn A18/A19  
-> 2. **Đặng Thế Thuận (MSSV: 2311031)** — Phụ trách: Backend RESTful API, SQLite Database, Nghiệp vụ Cây xanh, Sự cố, Chăm sóc & QR Code  
+> 2. **Đoàn Thế Thuần (MSSV: 2311031)** — Phụ trách: Backend RESTful API, SQLite Database, Nghiệp vụ Cây xanh, Sự cố, Chăm sóc & QR Code  
 
 ---
 
 ## 🧭 HƯỚNG DẪN DÀNH CHO CON CHAT / AI AGENT (PROMPT-DRIVEN DIRECTIVE)
 Khi người dùng yêu cầu con chat thực hiện bất kỳ nhiệm vụ nào trong dự án này:
-1. **Xác định danh tính:** Đọc kỹ xem bạn đang đóng vai trò thực hiện công việc cho **BẠN THUẬN (Thuận)** hay **BẠN LÂM (Lâm)**.
+1. **Xác định danh tính:** Đọc kỹ xem bạn đang đóng vai trò thực hiện công việc cho **BẠN THUần (Thuần)** hay **BẠN LÂM (Lâm)**.
 2. **Quy tắc bất khả xâm phạm:**
    - AI của Thuận: **CHỈ ĐƯỢC PHÉP** tạo/sửa các file thuộc phạm vi Backend/Database được cấp phép tại **Mục 2**. Tuyệt đối KHÔNG chạm vào thư mục `contracts/`, `test/`, `scripts/`, `registry.js`, `services/blockchainClient.js`.
    - AI của Lâm: **CHỈ ĐƯỢC PHÉP** tạo/sửa các file thuộc phạm vi Blockchain/Smart Contract được cấp phép tại **Mục 2**. Tuyệt đối KHÔNG chạm vào `config/db.js`, `models/`, `controllers/`.

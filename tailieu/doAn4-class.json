@@ -1,0 +1,409 @@
+{
+  "version": "32.7.0",
+  "pages": [
+    {
+      "id": "gSGfihEKF2I_oBAevP80",
+      "name": "class",
+      "cells": [
+        {
+          "id": "3",
+          "type": "node",
+          "parent": "1",
+          "label": "Tree Management",
+          "html": "<b>Tree Management</b>"
+        },
+        {
+          "id": "8",
+          "type": "node",
+          "parent": "1",
+          "label": "TreeType\n-id: String\n-name: String\n-scientificName: String\n-description: String\n-careGuide: String\n-isActive: Boolean\n+create(): TreeType\n+update(): void\n+deactivate(): void",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 3px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold; background-color: rgb(255, 255, 255);\">TreeType</div><div style=\"border-bottom: 1px solid rgb(0, 0, 0); padding: 2px 0px;\"><div style=\"padding:0.5px 3px;\">-id: String</div><div style=\"padding:0.5px 3px;\">-name: String</div><div style=\"padding:0.5px 3px;\">-scientificName: String</div><div style=\"padding:0.5px 3px;\">-description: String</div><div style=\"padding:0.5px 3px;\">-careGuide: String</div><div style=\"padding:0.5px 3px;\">-isActive: Boolean</div></div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">+create(): TreeType</div><div style=\"padding:0.5px 3px;\">+update(): void</div><div style=\"padding:0.5px 3px;\">+deactivate(): void</div></div></div>"
+        },
+        {
+          "id": "9",
+          "type": "node",
+          "parent": "1",
+          "label": "Tree\n-id: String\n-publicCode: String\n-treeTypeId: String\n-displayName: String\n-address: String\n-latitude: Number\n-longitude: Number\n-plantedAt: Date\n-healthStatus: TreeHealthStatus\n-imageUrl: String\n-isActive: Boolean\n-createdAt: DateTime\n-updatedAt: DateTime\n+getPublicProfile(): Object\n+updateHealthStatus(status): void\n+generatePublicUrl(): String\n+deactivate(): void",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 3px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold; background-color: rgb(255, 255, 255);\">Tree</div><div style=\"border-bottom: 1px solid rgb(0, 0, 0); padding: 2px 0px;\"><div style=\"padding:0.5px 3px;\">-id: String</div><div style=\"padding:0.5px 3px;\">-publicCode: String</div><div style=\"padding:0.5px 3px;\">-treeTypeId: String</div><div style=\"padding:0.5px 3px;\">-displayName: String</div><div style=\"padding:0.5px 3px;\">-address: String</div><div style=\"padding:0.5px 3px;\">-latitude: Number</div><div style=\"padding:0.5px 3px;\">-longitude: Number</div><div style=\"padding:0.5px 3px;\">-plantedAt: Date</div><div style=\"padding:0.5px 3px;\">-healthStatus: TreeHealthStatus</div><div style=\"padding:0.5px 3px;\">-imageUrl: String</div><div style=\"padding:0.5px 3px;\">-isActive: Boolean</div><div style=\"padding:0.5px 3px;\">-createdAt: DateTime</div><div style=\"padding:0.5px 3px;\">-updatedAt: DateTime</div></div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">+getPublicProfile(): Object</div><div style=\"padding:0.5px 3px;\">+updateHealthStatus(status): void</div><div style=\"padding:0.5px 3px;\">+generatePublicUrl(): String</div><div style=\"padding:0.5px 3px;\">+deactivate(): void</div></div></div>"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-48",
+          "type": "edge",
+          "parent": "1",
+          "source": "10",
+          "target": "11"
+        },
+        {
+          "id": "10",
+          "type": "node",
+          "parent": "1",
+          "label": "QRCode\n-id: String\n-publicCode: String\n-publicUrl: String\n-imageData: Binary\n+generate(publicUrl): Binary\n+download(): Binary",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 3px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold; background-color: rgb(255, 255, 255);\">QRCode</div><div style=\"border-bottom: 1px solid rgb(0, 0, 0); padding: 2px 0px;\"><div style=\"padding:0.5px 3px;\">-id: String</div><div style=\"padding:0.5px 3px;\">-publicCode: String</div><div style=\"padding:0.5px 3px;\">-publicUrl: String</div><div style=\"padding:0.5px 3px;\">-imageData: Binary</div></div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">+generate(publicUrl): Binary</div><div style=\"padding:0.5px 3px;\">+download(): Binary</div></div></div>"
+        },
+        {
+          "id": "11",
+          "type": "node",
+          "parent": "1",
+          "label": "TreeHealthStatus\nGOOD\nWARNING\nCRITICAL",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 2px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold;\">TreeHealthStatus</div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">GOOD</div><div style=\"padding:0.5px 3px;\">WARNING</div><div style=\"padding:0.5px 3px;\">CRITICAL</div></div></div>"
+        },
+        {
+          "id": "4",
+          "type": "node",
+          "parent": "1",
+          "label": "User Management",
+          "html": "<b>User Management</b>"
+        },
+        {
+          "id": "12",
+          "type": "node",
+          "parent": "1",
+          "label": "User\n-id: String\n-username: String\n-passwordHash: String\n-fullName: String\n-role: Role\n-isActive: Boolean\n-createdAt: DateTime\n-updatedAt: DateTime\n+verifyPassword(password): Boolean\n+changePassword(newPassword): void\n+updateProfile(): void\n+deactivate(): void",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 3px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold; background-color: rgb(255, 255, 255);\">User</div><div style=\"border-bottom: 1px solid rgb(0, 0, 0); padding: 2px 0px;\"><div style=\"padding:0.5px 3px;\">-id: String</div><div style=\"padding:0.5px 3px;\">-username: String</div><div style=\"padding:0.5px 3px;\">-passwordHash: String</div><div style=\"padding:0.5px 3px;\">-fullName: String</div><div style=\"padding:0.5px 3px;\">-role: Role</div><div style=\"padding:0.5px 3px;\">-isActive: Boolean</div><div style=\"padding:0.5px 3px;\">-createdAt: DateTime</div><div style=\"padding:0.5px 3px;\">-updatedAt: DateTime</div></div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">+verifyPassword(password): Boolean</div><div style=\"padding:0.5px 3px;\">+changePassword(newPassword): void</div><div style=\"padding:0.5px 3px;\">+updateProfile(): void</div><div style=\"padding:0.5px 3px;\">+deactivate(): void</div></div></div>"
+        },
+        {
+          "id": "13",
+          "type": "node",
+          "parent": "1",
+          "label": "Role\nADMIN\nSTAFF",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 2px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold;\">Role</div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">ADMIN</div><div style=\"padding:0.5px 3px;\">STAFF</div></div></div>"
+        },
+        {
+          "id": "5",
+          "type": "node",
+          "parent": "1",
+          "label": "Tree Care Management",
+          "html": "<b>Tree Care Management</b>"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-64",
+          "type": "edge",
+          "parent": "1",
+          "source": "14",
+          "target": "22"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-66",
+          "type": "edge",
+          "parent": "1",
+          "source": "14",
+          "target": "15"
+        },
+        {
+          "id": "14",
+          "type": "node",
+          "parent": "1",
+          "label": "CareRecord\n-id: String\n-treeId: String\n-staffUserId: String\n-actionType: CareActionType\n-notes: String\n-imageUrl: String\n-performedAt: DateTime\n-payloadVersion: Integer\n-payloadHash: String\n-anchorStatus: AnchorStatus\n-txHash: String\n-createdAt: DateTime\n+create(): CareRecord\n+update(): void\n+buildCanonicalPayload(): Object",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 3px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold; background-color: rgb(255, 255, 255);\">CareRecord</div><div style=\"border-bottom: 1px solid rgb(0, 0, 0); padding: 2px 0px;\"><div style=\"padding:0.5px 3px;\">-id: String</div><div style=\"padding:0.5px 3px;\">-treeId: String</div><div style=\"padding:0.5px 3px;\">-staffUserId: String</div><div style=\"padding:0.5px 3px;\">-actionType: CareActionType</div><div style=\"padding:0.5px 3px;\">-notes: String</div><div style=\"padding:0.5px 3px;\">-imageUrl: String</div><div style=\"padding:0.5px 3px;\">-performedAt: DateTime</div><div style=\"padding:0.5px 3px;\">-payloadVersion: Integer</div><div style=\"padding:0.5px 3px;\">-payloadHash: String</div><div style=\"padding:0.5px 3px;\">-anchorStatus: AnchorStatus</div><div style=\"padding:0.5px 3px;\">-txHash: String</div><div style=\"padding:0.5px 3px;\">-createdAt: DateTime</div></div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">+create(): CareRecord</div><div style=\"padding:0.5px 3px;\">+update(): void</div><div style=\"padding:0.5px 3px;\">+buildCanonicalPayload(): Object</div></div></div>"
+        },
+        {
+          "id": "15",
+          "type": "node",
+          "parent": "1",
+          "label": "CareActionType\nWATERING\nPRUNING\nFERTILIZING\nINSPECTION\nOTHER",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 2px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold;\">CareActionType</div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">WATERING</div><div style=\"padding:0.5px 3px;\">PRUNING</div><div style=\"padding:0.5px 3px;\">FERTILIZING</div><div style=\"padding:0.5px 3px;\">INSPECTION</div><div style=\"padding:0.5px 3px;\">OTHER</div></div></div>"
+        },
+        {
+          "id": "6",
+          "type": "node",
+          "parent": "1",
+          "label": "Incident Management",
+          "html": "<b>Incident Management</b>"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-65",
+          "type": "edge",
+          "parent": "1",
+          "source": "16",
+          "target": "22"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-76",
+          "type": "edge",
+          "parent": "1",
+          "source": "16",
+          "target": "22"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-77",
+          "type": "node",
+          "parent": "_bAM8fic-ZvkUuewQdi_-76",
+          "label": "anchored by",
+          "html": "<p class=\"p1\" style=\"margin: 0px; font-width: normal; font-size: 9.8px; line-height: normal; font-size-adjust: none; font-kerning: auto; font-variant-alternates: normal; font-variant-ligatures: normal; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-position: normal; font-feature-settings: normal; font-optical-sizing: auto; font-variation-settings: normal; text-align: start; white-space: normal;\">anchored by</p>"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-78",
+          "type": "edge",
+          "parent": "1",
+          "source": "16",
+          "target": "18"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-79",
+          "type": "edge",
+          "parent": "1",
+          "source": "16",
+          "target": "19"
+        },
+        {
+          "id": "16",
+          "type": "node",
+          "parent": "1",
+          "label": "Incident\n-id: String\n-publicCode: String\n-treeId: String\n-reporterName: String\n-reporterPhone: String\n-description: String\n-imageUrl: String\n-latitude: Number\n-longitude: Number\n-severity: IncidentSeverity\n-status: IncidentStatus\n-assignedTo: String\n-reportedAt: DateTime\n-resolvedAt: DateTime\n-payloadVersion: Integer\n-payloadHash: String\n-anchorStatus: AnchorStatus\n-txHash: String\n-createdAt: DateTime\n-updatedAt: DateTime\n+submit(): void\n+assignStaff(userId): void\n+updateStatus(status): void\n+buildCanonicalPayload(): Object",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 3px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold; background-color: rgb(255, 255, 255);\">Incident</div><div style=\"border-bottom: 1px solid rgb(0, 0, 0); padding: 2px 0px;\"><div style=\"padding:0.5px 3px;\">-id: String</div><div style=\"padding:0.5px 3px;\">-publicCode: String</div><div style=\"padding:0.5px 3px;\">-treeId: String</div><div style=\"padding:0.5px 3px;\">-reporterName: String</div><div style=\"padding:0.5px 3px;\">-reporterPhone: String</div><div style=\"padding:0.5px 3px;\">-description: String</div><div style=\"padding:0.5px 3px;\">-imageUrl: String</div><div style=\"padding:0.5px 3px;\">-latitude: Number</div><div style=\"padding:0.5px 3px;\">-longitude: Number</div><div style=\"padding:0.5px 3px;\">-severity: IncidentSeverity</div><div style=\"padding:0.5px 3px;\">-status: IncidentStatus</div><div style=\"padding:0.5px 3px;\">-assignedTo: String</div><div style=\"padding:0.5px 3px;\">-reportedAt: DateTime</div><div style=\"padding:0.5px 3px;\">-resolvedAt: DateTime</div><div style=\"padding:0.5px 3px;\">-payloadVersion: Integer</div><div style=\"padding:0.5px 3px;\">-payloadHash: String</div><div style=\"padding:0.5px 3px;\">-anchorStatus: AnchorStatus</div><div style=\"padding:0.5px 3px;\">-txHash: String</div><div style=\"padding:0.5px 3px;\">-createdAt: DateTime</div><div style=\"padding:0.5px 3px;\">-updatedAt: DateTime</div></div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">+submit(): void</div><div style=\"padding:0.5px 3px;\">+assignStaff(userId): void</div><div style=\"padding:0.5px 3px;\">+updateStatus(status): void</div><div style=\"padding:0.5px 3px;\">+buildCanonicalPayload(): Object</div></div></div>"
+        },
+        {
+          "id": "17",
+          "type": "node",
+          "parent": "1",
+          "label": "IncidentUpdate\n-id: String\n-incidentId: String\n-actorUserId: String\n-oldStatus: IncidentStatus\n-newStatus: IncidentStatus\n-note: String\n-createdAt: DateTime\n+recordChange(): void",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 3px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold; background-color: rgb(255, 255, 255);\">IncidentUpdate</div><div style=\"border-bottom: 1px solid rgb(0, 0, 0); padding: 2px 0px;\"><div style=\"padding:0.5px 3px;\">-id: String</div><div style=\"padding:0.5px 3px;\">-incidentId: String</div><div style=\"padding:0.5px 3px;\">-actorUserId: String</div><div style=\"padding:0.5px 3px;\">-oldStatus: IncidentStatus</div><div style=\"padding:0.5px 3px;\">-newStatus: IncidentStatus</div><div style=\"padding:0.5px 3px;\">-note: String</div><div style=\"padding:0.5px 3px;\">-createdAt: DateTime</div></div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">+recordChange(): void</div></div></div>"
+        },
+        {
+          "id": "18",
+          "type": "node",
+          "parent": "1",
+          "label": "IncidentSeverity\nLOW\nMEDIUM\nHIGH\nCRITICAL",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 2px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold;\">IncidentSeverity</div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">LOW</div><div style=\"padding:0.5px 3px;\">MEDIUM</div><div style=\"padding:0.5px 3px;\">HIGH</div><div style=\"padding:0.5px 3px;\">CRITICAL</div></div></div>"
+        },
+        {
+          "id": "19",
+          "type": "node",
+          "parent": "1",
+          "label": "IncidentStatus\nNEW\nASSIGNED\nIN_PROGRESS\nRESOLVED\nREJECTED",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 2px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold;\">IncidentStatus</div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">NEW</div><div style=\"padding:0.5px 3px;\">ASSIGNED</div><div style=\"padding:0.5px 3px;\">IN_PROGRESS</div><div style=\"padding:0.5px 3px;\">RESOLVED</div><div style=\"padding:0.5px 3px;\">REJECTED</div></div></div>"
+        },
+        {
+          "id": "7",
+          "type": "node",
+          "parent": "1",
+          "label": "Blockchain Audit",
+          "html": "<b>Blockchain Audit</b>"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-56",
+          "type": "edge",
+          "parent": "1",
+          "source": "20",
+          "target": "21"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-57",
+          "type": "edge",
+          "parent": "1",
+          "source": "20",
+          "target": "22"
+        },
+        {
+          "id": "20",
+          "type": "node",
+          "parent": "1",
+          "label": "BlockchainAnchor\n-id: String\n-recordType: BlockchainRecordType\n-recordId: String\n-payloadVersion: Integer\n-payloadHash: String\n-txHash: String\n-blockNumber: Number\n-contractAddress: String\n-status: AnchorStatus\n-retryCount: Integer\n-lastError: String\n-createdAt: DateTime\n-updatedAt: DateTime\n+markPending(): void\n+markConfirmed(txHash, blockNumber): void\n+markFailed(error): void\n+increaseRetryCount(): void",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 3px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold; background-color: rgb(255, 255, 255);\">BlockchainAnchor</div><div style=\"border-bottom: 1px solid rgb(0, 0, 0); padding: 2px 0px;\"><div style=\"padding:0.5px 3px;\">-id: String</div><div style=\"padding:0.5px 3px;\">-recordType: BlockchainRecordType</div><div style=\"padding:0.5px 3px;\">-recordId: String</div><div style=\"padding:0.5px 3px;\">-payloadVersion: Integer</div><div style=\"padding:0.5px 3px;\">-payloadHash: String</div><div style=\"padding:0.5px 3px;\">-txHash: String</div><div style=\"padding:0.5px 3px;\">-blockNumber: Number</div><div style=\"padding:0.5px 3px;\">-contractAddress: String</div><div style=\"padding:0.5px 3px;\">-status: AnchorStatus</div><div style=\"padding:0.5px 3px;\">-retryCount: Integer</div><div style=\"padding:0.5px 3px;\">-lastError: String</div><div style=\"padding:0.5px 3px;\">-createdAt: DateTime</div><div style=\"padding:0.5px 3px;\">-updatedAt: DateTime</div></div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">+markPending(): void</div><div style=\"padding:0.5px 3px;\">+markConfirmed(txHash, blockNumber): void</div><div style=\"padding:0.5px 3px;\">+markFailed(error): void</div><div style=\"padding:0.5px 3px;\">+increaseRetryCount(): void</div></div></div>"
+        },
+        {
+          "id": "21",
+          "type": "node",
+          "parent": "1",
+          "label": "BlockchainRecordType\nTREE_PROFILE\nCARE_RECORD\nINCIDENT_REPORT\nINCIDENT_RESOLUTION",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 2px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold;\">BlockchainRecordType</div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">TREE_PROFILE</div><div style=\"padding:0.5px 3px;\">CARE_RECORD</div><div style=\"padding:0.5px 3px;\">INCIDENT_REPORT</div><div style=\"padding:0.5px 3px;\">INCIDENT_RESOLUTION</div></div></div>"
+        },
+        {
+          "id": "22",
+          "type": "node",
+          "parent": "1",
+          "label": "AnchorStatus\nPENDING\nCONFIRMED\nFAILED",
+          "html": "<div style=\"font-size: 9px; line-height: 1.25;\"><div style=\"text-align: center; padding: 2px; border-bottom: 1px solid rgb(0, 0, 0); font-weight: bold;\">AnchorStatus</div><div style=\"padding:2px 0;\"><div style=\"padding:0.5px 3px;\">PENDING</div><div style=\"padding:0.5px 3px;\">CONFIRMED</div><div style=\"padding:0.5px 3px;\">FAILED</div></div></div>"
+        },
+        {
+          "id": "23",
+          "type": "node",
+          "parent": "1",
+          "label": "payloadHash được tính từ\ncanonical payload version cụ thể.\nKhông hash trực tiếp DB row.",
+          "html": "payloadHash được tính từ<br>canonical payload version cụ thể.<br>Không hash trực tiếp DB row."
+        },
+        {
+          "id": "26",
+          "type": "edge",
+          "parent": "1",
+          "source": "9",
+          "target": "8",
+          "label": "belongs to"
+        },
+        {
+          "id": "2lJIz1teuwwtV0GYYOcl-332",
+          "type": "node",
+          "parent": "26",
+          "label": "1"
+        },
+        {
+          "id": "2lJIz1teuwwtV0GYYOcl-336",
+          "type": "node",
+          "parent": "26",
+          "label": "0..*"
+        },
+        {
+          "id": "29",
+          "type": "edge",
+          "parent": "1",
+          "source": "9",
+          "target": "10",
+          "label": "public QR"
+        },
+        {
+          "id": "2lJIz1teuwwtV0GYYOcl-334",
+          "type": "node",
+          "parent": "29",
+          "label": "1"
+        },
+        {
+          "id": "2lJIz1teuwwtV0GYYOcl-335",
+          "type": "node",
+          "parent": "29",
+          "label": "0..1"
+        },
+        {
+          "id": "32",
+          "type": "edge",
+          "parent": "1",
+          "source": "9",
+          "target": "14",
+          "label": "care history",
+          "html": "care history<div><br/></div>"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-58",
+          "type": "node",
+          "parent": "32",
+          "label": "1"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-59",
+          "type": "node",
+          "parent": "32",
+          "label": "0..*"
+        },
+        {
+          "id": "35",
+          "type": "edge",
+          "parent": "1",
+          "source": "12",
+          "target": "14",
+          "label": "performed by"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-62",
+          "type": "node",
+          "parent": "35",
+          "label": "0..*"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-63",
+          "type": "node",
+          "parent": "35",
+          "label": "1"
+        },
+        {
+          "id": "38",
+          "type": "edge",
+          "parent": "1",
+          "source": "12",
+          "target": "16",
+          "label": "assigned staff"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-74",
+          "type": "node",
+          "parent": "38",
+          "label": "0..*"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-75",
+          "type": "node",
+          "parent": "38",
+          "label": "0..1"
+        },
+        {
+          "id": "41",
+          "type": "edge",
+          "parent": "1",
+          "source": "16",
+          "target": "17",
+          "label": "status history"
+        },
+        {
+          "id": "44",
+          "type": "edge",
+          "parent": "1",
+          "source": "12",
+          "target": "13",
+          "label": "updated by"
+        },
+        {
+          "id": "45",
+          "type": "edge",
+          "parent": "1",
+          "source": "9",
+          "target": "20",
+          "label": "TREE_PROFILE anchor"
+        },
+        {
+          "id": "46",
+          "type": "edge",
+          "parent": "1",
+          "source": "14",
+          "target": "20",
+          "label": "anchored by"
+        },
+        {
+          "id": "47",
+          "type": "edge",
+          "parent": "1",
+          "source": "16",
+          "target": "20",
+          "label": "anchored by"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-49",
+          "type": "edge",
+          "parent": "1",
+          "source": "11",
+          "target": "11"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-67",
+          "type": "edge",
+          "parent": "1",
+          "source": "14",
+          "target": "23"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-69",
+          "type": "edge",
+          "parent": "1",
+          "source": "16",
+          "target": "9"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-70",
+          "type": "node",
+          "parent": "_bAM8fic-ZvkUuewQdi_-69",
+          "label": "related tree",
+          "html": "<p class=\"p1\" style=\"margin: 0px; font-width: normal; font-size: 9.8px; line-height: normal; font-size-adjust: none; font-kerning: auto; font-variant-alternates: normal; font-variant-ligatures: normal; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-position: normal; font-feature-settings: normal; font-optical-sizing: auto; font-variation-settings: normal; text-align: start; white-space: normal;\">related tree</p>"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-71",
+          "type": "node",
+          "parent": "_bAM8fic-ZvkUuewQdi_-69",
+          "label": "0..*"
+        },
+        {
+          "id": "_bAM8fic-ZvkUuewQdi_-72",
+          "type": "node",
+          "parent": "_bAM8fic-ZvkUuewQdi_-69",
+          "label": "0..1"
+        }
+      ]
+    }
+  ]
+}
