@@ -1,0 +1,200 @@
+import React, { useState } from 'react';
+import { X, ClipboardList, Check, ShieldCheck } from 'lucide-react';
+import { CareActionType, TreeHealthStatus } from '../types';
+import { storage } from '../db/storage';
+
+interface CareFormModalProps {
+  initialTreeId?: string;
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+export const CareFormModal: React.FC<CareFormModalProps> = ({
+  initialTreeId,
+  onClose,
+  onSaved,
+}) => {
+  const trees = storage.getTrees();
+  const activeUser = storage.getActiveUser();
+
+  const [treeId, setTreeId] = useState(initialTreeId || (trees[0]?.id ?? ''));
+  const selectedTree = trees.find((t) => t.id === treeId);
+
+  const [actionType, setActionType] = useState<CareActionType>('PRUNING');
+  const [healthBefore, setHealthBefore] = useState<TreeHealthStatus>(selectedTree?.healthStatus || 'FAIR');
+  const [healthAfter, setHealthAfter] = useState<TreeHealthStatus>(selectedTree?.healthStatus || 'GOOD');
+  const [notes, setNotes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!notes.trim()) {
+      setError('Vui lòng nhập mô tả chi tiết công việc chăm sóc đã thực hiện');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await storage.createCareRecord({
+        treeId,
+        staffUserId: activeUser.id,
+        staffName: activeUser.fullName,
+        actionType,
+        healthBefore,
+        healthAfter,
+        notes: notes.trim(),
+        performedAt: new Date().toISOString(),
+      });
+
+      onSaved();
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Có lỗi khi lưu nhật ký chăm sóc');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+      <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] shadow-2xl flex flex-col border border-[#E0EBDD] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-[#E0EBDD] text-[#174B36] rounded-lg">
+              <ClipboardList className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-[#174B36]">Ghi nhận Nhật ký Chăm sóc Thực địa</h2>
+              <p className="text-xs text-slate-500">Người thực hiện: {activeUser.fullName}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+          {error && (
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label className="block font-semibold text-slate-700 mb-1">Cây xanh được chăm sóc *</label>
+            <select
+              value={treeId}
+              onChange={(e) => {
+                setTreeId(e.target.value);
+                const t = trees.find((item) => item.id === e.target.value);
+                if (t) {
+                  setHealthBefore(t.healthStatus);
+                  setHealthAfter(t.healthStatus);
+                }
+              }}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:border-[#347A50] focus:ring-1 focus:ring-[#347A50] bg-white text-xs font-medium"
+            >
+              {trees.map((t) => (
+                <option key={t.id} value={t.id}>
+                  [{t.publicCode}] {t.displayName} — {t.address}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block font-semibold text-slate-700 mb-1">Loại công việc chăm sóc *</label>
+            <select
+              value={actionType}
+              onChange={(e) => setActionType(e.target.value as CareActionType)}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:border-[#347A50] focus:ring-1 focus:ring-[#347A50] bg-white text-xs"
+            >
+              <option value="PRUNING">Cắt tỉa cành (PRUNING) - Cành khô, cành vươn nguy hiểm</option>
+              <option value="WATERING">Tưới nước giữ ẩm (WATERING)</option>
+              <option value="FERTILIZING">Bón phân hữu cơ vi sinh (FERTILIZING)</option>
+              <option value="PEST_CONTROL">Xử lý sâu bệnh & mối mọt (PEST_CONTROL)</option>
+              <option value="SURVEY">Khảo sát kỹ thuật & độ nghiêng (SURVEY)</option>
+              <option value="SUPPORT_STAKE">Chống cọc đỡ & gia cố rễ (SUPPORT_STAKE)</option>
+              <option value="TREATMENT">Bôi keo liền sẹo / Chữa sâu thân (TREATMENT)</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Sức khỏe trước chăm sóc</label>
+              <select
+                value={healthBefore}
+                onChange={(e) => setHealthBefore(e.target.value as TreeHealthStatus)}
+                className="w-full px-2 py-1.5 border border-slate-200 rounded-lg bg-white text-xs"
+              >
+                <option value="GOOD">Tốt (GOOD)</option>
+                <option value="FAIR">Bình thường (FAIR)</option>
+                <option value="POOR">Kém (POOR)</option>
+                <option value="CRITICAL">Nguy cấp (CRITICAL)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Sức khỏe sau chăm sóc</label>
+              <select
+                value={healthAfter}
+                onChange={(e) => setHealthAfter(e.target.value as TreeHealthStatus)}
+                className="w-full px-2 py-1.5 border border-slate-200 rounded-lg bg-white text-xs"
+              >
+                <option value="GOOD">Tốt (GOOD)</option>
+                <option value="FAIR">Bình thường (FAIR)</option>
+                <option value="POOR">Kém (POOR)</option>
+                <option value="CRITICAL">Nguy cấp (CRITICAL)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-semibold text-slate-700 mb-1">Mô tả công việc & vật tư sử dụng *</label>
+            <textarea
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Ví dụ: Đã cắt tỉa 4 cành khô có nguy cơ rơi gãy, bôi vôi sát khuẩn vết cắt và kiểm tra gốc cây vững vàng."
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:border-[#347A50] focus:ring-1 focus:ring-[#347A50] text-xs"
+            />
+          </div>
+
+          <div className="p-3 rounded-lg bg-[#E0EBDD]/60 border border-[#E0EBDD] flex items-center gap-2 text-[#174B36]">
+            <ShieldCheck className="w-4 h-4 shrink-0 text-[#347A50]" />
+            <span className="text-[11px] leading-tight">
+              Bản ghi sẽ được băm SHA-256 theo chuẩn Canonical JSON Version 1 và neo ngay vào Smart Contract với địa chỉ ví của nhân viên.
+            </span>
+          </div>
+
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-[#174B36] hover:bg-[#347A50] text-white font-semibold rounded-lg flex items-center gap-1.5 transition-colors shadow-2xs text-xs"
+            >
+              {isSubmitting ? (
+                <span>Đang ghi Blockchain...</span>
+              ) : (
+                <>
+                  <Check className="w-4 h-4" />
+                  <span>Xác nhận & Ghi Blockchain</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};

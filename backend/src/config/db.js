@@ -13,6 +13,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // Khởi tạo các bảng cho cơ sở dữ liệu nếu chưa tồn tại
 db.serialize(() => {
+  // Kích hoạt chế độ Foreign Keys trong SQLite theo chuẩn THUAN-01
+  db.run("PRAGMA foreign_keys = ON;");
+
   // 1. Bảng Trees (Quản lý Cây xanh)
   db.run(`
     CREATE TABLE IF NOT EXISTS trees (
@@ -20,10 +23,10 @@ db.serialize(() => {
       tree_code TEXT UNIQUE NOT NULL,
       species TEXT NOT NULL,
       location_name TEXT NOT NULL,
-      latitude REAL,
-      longitude REAL,
-      planted_date TEXT,
-      health_status TEXT DEFAULT 'Tốt',
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      planted_date TEXT NOT NULL,
+      health_status TEXT DEFAULT 'Tốt' CHECK(health_status IN ('Tốt', 'Bình thường', 'Cần chăm sóc', 'Sâu bệnh', 'Nguy hiểm')),
       qr_code_url TEXT,
       data_hash TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -31,21 +34,28 @@ db.serialize(() => {
     )
   `);
 
+  // Tạo index cho tree_code để tối ưu tra cứu mã QR
+  db.run(`CREATE INDEX IF NOT EXISTS idx_tree_code ON trees(tree_code);`);
+
   // 2. Bảng Incidents (Tiếp nhận Sự cố từ người dân / nhân viên)
   db.run(`
     CREATE TABLE IF NOT EXISTS incidents (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       tree_id INTEGER,
-      reporter_name TEXT,
-      reporter_phone TEXT,
+      reporter_name TEXT NOT NULL,
+      reporter_phone TEXT NOT NULL,
       description TEXT NOT NULL,
       image_url TEXT,
-      severity TEXT DEFAULT 'Trung bình',
-      status TEXT DEFAULT 'Chờ xử lý',
+      severity TEXT DEFAULT 'Trung bình' CHECK(severity IN ('Thấp', 'Trung bình', 'Cao', 'Khẩn cấp')),
+      status TEXT DEFAULT 'Chờ xử lý' CHECK(status IN ('Chờ xử lý', 'Đang xử lý', 'Đã hoàn thành', 'Từ chối')),
       reported_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      resolved_at DATETIME,
       FOREIGN KEY (tree_id) REFERENCES trees(id) ON DELETE SET NULL
     )
   `);
+
+  // Bổ sung cột resolved_at nếu database SQLite đã tạo trước đó chưa có
+  db.run("ALTER TABLE incidents ADD COLUMN resolved_at DATETIME", () => {});
 
   // 3. Bảng CareRecords (Lịch sử Chăm sóc / Bảo dưỡng)
   db.run(`
@@ -53,7 +63,7 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       tree_id INTEGER NOT NULL,
       caretaker_name TEXT NOT NULL,
-      action_type TEXT NOT NULL,
+      action_type TEXT NOT NULL CHECK(action_type IN ('Tưới nước', 'Bón phân', 'Cắt tỉa', 'Trị sâu bệnh', 'Gia cố cọc')),
       notes TEXT,
       action_date DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (tree_id) REFERENCES trees(id) ON DELETE CASCADE
