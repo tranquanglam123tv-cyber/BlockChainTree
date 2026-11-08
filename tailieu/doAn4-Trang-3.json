@@ -1,0 +1,725 @@
+{
+  "version": "32.6.10",
+  "pages": [
+    {
+      "id": "zxVXxpOjJ7ul7v6XAwe2",
+      "name": "Trang-3",
+      "cells": [
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-257",
+          "type": "node",
+          "parent": "1",
+          "label": "HỆ THỐNG URBANTREE"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-258",
+          "type": "node",
+          "parent": "1",
+          "label": "Người dân\n(Citizen)"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "type": "node",
+          "parent": "1",
+          "label": "Quản trị viên\n(Admin)"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-260",
+          "type": "node",
+          "parent": "1",
+          "label": "Nhân viên\n(Staff)"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-261",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-258",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-297"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-262",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-258",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-298"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-263",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-258",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-299"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-264",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-309"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-265",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-310"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-266",
+          "type": "edge",
+          "parent": "1",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-312"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-267",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-324"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-268",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-325"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-269",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-326"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-270",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-327"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-271",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-354"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-272",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-364"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-273",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-365"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-274",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-259",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-366"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-275",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-260",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-309"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-276",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-260",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-287"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-277",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-260",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-288"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-278",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-260",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-343"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-279",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-260",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-344"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-287",
+          "type": "node",
+          "parent": "1",
+          "label": "UC20: Xem lịch sử chăm sóc"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-288",
+          "type": "node",
+          "parent": "1",
+          "label": "UC21: Tạo nhật ký chăm sóc"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-289",
+          "type": "node",
+          "parent": "1",
+          "label": "UC22: Cập nhật thông tin chăm sóc"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-290",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-288",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-287"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-291",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-290",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-292",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-289",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-287"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-293",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-292",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-294",
+          "type": "node",
+          "parent": "1",
+          "label": "UC19: Quét QR nhận diện cây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-295",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-288",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-294"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-296",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-295",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-297",
+          "type": "node",
+          "parent": "1",
+          "label": "UC01: Quét QR cây xanh"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-298",
+          "type": "node",
+          "parent": "1",
+          "label": "UC04: Gửi phản ánh sự cố"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-299",
+          "type": "node",
+          "parent": "1",
+          "label": "UC06: Tra cứu tiến độ phản ánh"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-300",
+          "type": "node",
+          "parent": "1",
+          "label": "UC02: Xem hồ sơ cây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-301",
+          "type": "node",
+          "parent": "1",
+          "label": "UC03: Xem hướng dẫn chăm sóc"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-302",
+          "type": "node",
+          "parent": "1",
+          "label": "UC05: Nhận mã tra cứu"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-303",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-297",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-300"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-304",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-303",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-305",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-300",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-301"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-306",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-305",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-307",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-298",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-302"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-308",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-307",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-309",
+          "type": "node",
+          "parent": "1",
+          "label": "UC07: Đăng nhập"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-310",
+          "type": "node",
+          "parent": "1",
+          "label": "UC08: Đăng xuất"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-311",
+          "type": "node",
+          "parent": "1",
+          "label": "UC09: Kiểm tra quyền truy cập"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-312",
+          "type": "node",
+          "parent": "1",
+          "label": "UC28: Xem danh sách người dùng"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-313",
+          "type": "node",
+          "parent": "1",
+          "label": "UC29: Tạo tài khoản nhân viên"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-314",
+          "type": "node",
+          "parent": "1",
+          "label": "UC30: Cập nhật tài khoản"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-315",
+          "type": "node",
+          "parent": "1",
+          "label": "UC31: Khóa/Mở tài khoản"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-316",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-309",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-311"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-317",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-316",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-318",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-313",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-312"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-319",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-318",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-320",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-314",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-312"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-321",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-320",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-322",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-315",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-312"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-323",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-322",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-324",
+          "type": "node",
+          "parent": "1",
+          "label": "UC10: Xem danh sách cây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-325",
+          "type": "node",
+          "parent": "1",
+          "label": "UC18: Xem bản đồ cây xanh"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-326",
+          "type": "node",
+          "parent": "1",
+          "label": "UC16: Quản lý loài cây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-327",
+          "type": "node",
+          "parent": "1",
+          "label": "UC17: Tạo và in mã QR"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-328",
+          "type": "node",
+          "parent": "1",
+          "label": "UC11: Tìm kiếm và lọc cây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-329",
+          "type": "node",
+          "parent": "1",
+          "label": "UC12: Xem chi tiết cây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-330",
+          "type": "node",
+          "parent": "1",
+          "label": "UC13: Thêm cây xanh"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-331",
+          "type": "node",
+          "parent": "1",
+          "label": "UC14: Cập nhật hồ sơ cây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-332",
+          "type": "node",
+          "parent": "1",
+          "label": "UC15: Ngừng hoạt động cây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-333",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-328",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-324"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-334",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-333",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-335",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-329",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-324"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-336",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-335",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-337",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-330",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-324"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-338",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-337",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-339",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-331",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-324"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-340",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-339",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-341",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-332",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-324"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-342",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-341",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-343",
+          "type": "node",
+          "parent": "1",
+          "label": "UC23: Xem danh sách sự cố"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-344",
+          "type": "node",
+          "parent": "1",
+          "label": "UC27: Xem lịch sử xử lý"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-345",
+          "type": "node",
+          "parent": "1",
+          "label": "UC24: Xem chi tiết sự cố"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-346",
+          "type": "node",
+          "parent": "1",
+          "label": "UC26: Cập nhật trạng thái sự cố"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-347",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-345",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-343"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-348",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-347",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-349",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-346",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-343"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-350",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-349",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-351",
+          "type": "node",
+          "parent": "1",
+          "label": "UC25: Phân công nhân viên"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-352",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-351",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-343"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-353",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-352",
+          "label": "«extend»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-354",
+          "type": "node",
+          "parent": "1",
+          "label": "UC32: Xem Dashboard"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-355",
+          "type": "node",
+          "parent": "1",
+          "label": "UC33: Thống kê cây xanh"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-356",
+          "type": "node",
+          "parent": "1",
+          "label": "UC34: Thống kê sự cố"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-357",
+          "type": "node",
+          "parent": "1",
+          "label": "UC35: Xem hoạt động gần đây"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-358",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-354",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-355"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-359",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-358",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-360",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-354",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-356"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-361",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-360",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-362",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-354",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-357"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-363",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-362",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-364",
+          "type": "node",
+          "parent": "1",
+          "label": "UC40: Xem lịch sử giao dịch"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-365",
+          "type": "node",
+          "parent": "1",
+          "label": "UC41: Thử neo lại dữ liệu lỗi"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-366",
+          "type": "node",
+          "parent": "1",
+          "label": "UC39: Xác minh tính toàn vẹn"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-367",
+          "type": "node",
+          "parent": "1",
+          "label": "UC36: Tạo dữ liệu chuẩn hóa"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-368",
+          "type": "node",
+          "parent": "1",
+          "label": "UC37: Tính mã băm SHA-256"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-369",
+          "type": "node",
+          "parent": "1",
+          "label": "UC38: Neo hash lên Blockchain"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-370",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-368",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-367"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-371",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-370",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-372",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-369",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-368"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-373",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-372",
+          "label": "«include»"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-374",
+          "type": "edge",
+          "parent": "1",
+          "source": "lJuGbzWMEF0Ma2YUIPDe-366",
+          "target": "lJuGbzWMEF0Ma2YUIPDe-368"
+        },
+        {
+          "id": "lJuGbzWMEF0Ma2YUIPDe-375",
+          "type": "node",
+          "parent": "lJuGbzWMEF0Ma2YUIPDe-374",
+          "label": "«include»"
+        }
+      ]
+    }
+  ]
+}

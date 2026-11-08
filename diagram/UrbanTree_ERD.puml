@@ -1,0 +1,194 @@
+@startuml UrbanTree_ERD
+!theme plain
+skinparam linetype ortho
+skinparam roundcorner 8
+skinparam shadowing false
+skinparam handwritten false
+skinparam classAttributeIconSize 0
+
+skinparam entity {
+    BackgroundColor #FFFFFF
+    BorderColor #1E293B
+    BorderThickness 1.5
+    FontSize 12
+    FontName "Segoe UI", Arial, sans-serif
+}
+
+skinparam entity<<core>> {
+    BackgroundColor #F0FDF4
+    BorderColor #16A34A
+}
+
+skinparam entity<<blockchain>> {
+    BackgroundColor #FFF7ED
+    BorderColor #EA580C
+}
+
+skinparam entity<<management>> {
+    BackgroundColor #EFF6FF
+    BorderColor #2563EB
+}
+
+title SƠ ĐỒ THỰC THỂ LIÊN KẾT (ERD) - HỆ THỐNG URBANTREE
+
+' ==============================================================
+' 1. NHÓM QUẢN TRỊ NGƯỜI DÙNG & PHÂN QUYỀN
+' ==============================================================
+entity "users" as users <<management>> {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    * username : VARCHAR(50) <<UNIQUE>>
+    * email : VARCHAR(100) <<UNIQUE>>
+    * password_hash : VARCHAR(255)
+    * full_name : VARCHAR(100)
+    * phone : VARCHAR(20)
+    * role : VARCHAR(20) <<'ADMIN' | 'STAFF'>>
+    * status : VARCHAR(20) <<'ACTIVE' | 'INACTIVE'>>
+    * created_at : DATETIME
+    * updated_at : DATETIME
+}
+
+' ==============================================================
+' 2. NHÓM QUẢN LÝ CÂY XANH & LOÀI CÂY
+' ==============================================================
+entity "tree_types" as tree_types <<core>> {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    * name : VARCHAR(100)
+    * scientific_name : VARCHAR(150)
+    * description : TEXT
+    * care_guide : TEXT
+    * status : VARCHAR(20) <<'ACTIVE' | 'INACTIVE'>>
+    * created_at : DATETIME
+}
+
+entity "trees" as trees <<core>> {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    * tree_code : VARCHAR(50) <<UNIQUE>>
+    # tree_type_id : INTEGER <<FK>>
+    * location_name : VARCHAR(255)
+    * address : VARCHAR(255)
+    latitude : DECIMAL(10, 8)
+    longitude : DECIMAL(11, 8)
+    planted_date : DATE
+    height_meter : DECIMAL(5, 2)
+    diameter_cm : DECIMAL(5, 2)
+    * health_status : VARCHAR(50) <<'Tốt' | 'Bình thường' | 'Sâu bệnh' | 'Nguy hiểm'>>
+    * status : VARCHAR(20) <<'ACTIVE' | 'INACTIVE' | 'REMOVED'>>
+    qr_code_url : VARCHAR(255)
+    image_url : VARCHAR(255)
+    data_hash : VARCHAR(64)
+    * created_at : DATETIME
+    * updated_at : DATETIME
+}
+
+' ==============================================================
+' 3. NHÓM NHẬT KÝ CHĂM SÓC
+' ==============================================================
+entity "care_records" as care_records <<core>> {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    * care_code : VARCHAR(50) <<UNIQUE>>
+    # tree_id : INTEGER <<FK>>
+    # staff_id : INTEGER <<FK>>
+    * action_type : VARCHAR(50) <<'Cắt tỉa' | 'Bón phân' | 'Tưới nước' | 'Trị sâu bệnh'>>
+    health_before : VARCHAR(50)
+    health_after : VARCHAR(50)
+    notes : TEXT
+    image_before_url : VARCHAR(255)
+    image_after_url : VARCHAR(255)
+    * data_hash : VARCHAR(64)
+    * anchor_status : VARCHAR(20) <<'PENDING' | 'CONFIRMED' | 'FAILED'>>
+    * action_date : DATETIME
+    * created_at : DATETIME
+}
+
+' ==============================================================
+' 4. NHÓM TIẾP NHẬN & XỬ LÝ SỰ CỐ
+' ==============================================================
+entity "incidents" as incidents <<core>> {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    * tracking_code : VARCHAR(50) <<UNIQUE>>
+    # tree_id : INTEGER <<FK, NULLABLE>>
+    reporter_name : VARCHAR(100)
+    reporter_phone : VARCHAR(20)
+    reporter_email : VARCHAR(100)
+    * description : TEXT
+    address : VARCHAR(255)
+    latitude : DECIMAL(10, 8)
+    longitude : DECIMAL(11, 8)
+    image_url : VARCHAR(255)
+    * severity : VARCHAR(20) <<'Thấp' | 'Trung bình' | 'Cao' | 'Khẩn cấp'>>
+    * status : VARCHAR(30) <<'Chờ xử lý' | 'Đã tiếp nhận' | 'Đang xử lý' | 'Đã giải quyết' | 'Từ chối'>>
+    # assigned_staff_id : INTEGER <<FK, NULLABLE>>
+    * reported_at : DATETIME
+    * updated_at : DATETIME
+}
+
+entity "incident_updates" as incident_updates <<core>> {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    # incident_id : INTEGER <<FK>>
+    # actor_id : INTEGER <<FK>>
+    old_status : VARCHAR(30)
+    * new_status : VARCHAR(30)
+    notes : TEXT
+    image_url : VARCHAR(255)
+    * created_at : DATETIME
+}
+
+' ==============================================================
+' 5. NHÓM KIỂM TOÁN VÀ NEO HASH BLOCKCHAIN
+' ==============================================================
+entity "blockchain_audits" as blockchain_audits <<blockchain>> {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    * record_type : VARCHAR(30) <<'TREE_PROFILE' | 'CARE_LOG' | 'INCIDENT_REPORT'>>
+    * record_id : VARCHAR(50)
+    * data_hash : VARCHAR(64)
+    tx_hash : VARCHAR(66)
+    block_number : INTEGER
+    chain_id : INTEGER
+    contract_address : VARCHAR(42)
+    recorder_address : VARCHAR(42)
+    * status : VARCHAR(20) <<'PENDING' | 'CONFIRMED' | 'FAILED'>>
+    retry_count : INTEGER DEFAULT 0
+    last_error : TEXT
+    confirmed_at : DATETIME
+    * created_at : DATETIME
+}
+
+' ==============================================================
+' CÁC QUAN HỆ RÀNG BUỘC (RELATIONSHIPS)
+' ==============================================================
+
+' 1. Loài cây và Cây xanh (1 - N)
+tree_types ||..o{ trees : "1 loài có nhiều cây (tree_type_id)"
+
+' 2. Cây xanh và Nhật ký chăm sóc (1 - N)
+trees ||..o{ care_records : "1 cây có nhiều lượt chăm sóc (tree_id)"
+
+' 3. Nhân viên và Nhật ký chăm sóc (1 - N)
+users ||..o{ care_records : "Nhân viên thực hiện (staff_id)"
+
+' 4. Cây xanh và Sự cố (1 - N, có thể NULL nếu sự cố cây ngoài danh mục)
+trees |o..o{ incidents : "Gắn với cây cụ thể (tree_id)"
+
+' 5. Nhân viên được phân công xử lý sự cố (1 - N, có thể NULL ban đầu)
+users |o..o{ incidents : "Phân công xử lý (assigned_staff_id)"
+
+' 6. Sự cố và Lịch sử cập nhật tiến độ (1 - N)
+incidents ||..o{ incident_updates : "Có lịch sử timeline (incident_id)"
+
+' 7. Người thực hiện cập nhật tiến độ sự cố (1 - N)
+users ||..o{ incident_updates : "Người cập nhật (actor_id)"
+
+' 8. Liên kết logic kiểm toán Blockchain (Record_ID & Record_Type)
+care_records .. blockchain_audits : "Neo SHA-256 (Record_Type='CARE_LOG')"
+trees .. blockchain_audits : "Neo SHA-256 (Record_Type='TREE_PROFILE')"
+incidents .. blockchain_audits : "Neo SHA-256 (Record_Type='INCIDENT_REPORT')"
+
+@enduml
+
