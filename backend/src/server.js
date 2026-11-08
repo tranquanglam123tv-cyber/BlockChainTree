@@ -24,6 +24,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/verifier', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'verifier.html'));
 });
+app.get('/citizen', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'citizen.html'));
+});
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
 
 // Đăng ký API Routes
 // 1. Database & Nghiệp vụ quản lý cây xanh theo từng Module chuẩn hóa (Thuận)

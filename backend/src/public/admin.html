@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanTree — Trung Tâm Điều Phối Sự Cố & Cứu Hộ (A14/A15)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: '#174B36',
+                        leaf: '#347A50',
+                        vangogh: '#F3E8B2',
+                        canvas: '#F6F5EC'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-canvas text-gray-800 min-h-screen">
+    <!-- Navbar Header -->
+    <header class="bg-forest text-white py-4 px-6 shadow border-b-2 border-vangogh">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-truck-medical text-vangogh text-2xl"></i>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide">TRUNG TÂM ĐIỀU PHỐI SỰ CỐ CÂY XANH (A14)</h1>
+                    <p class="text-xs text-vangogh/80">Mục tiêu: Tiếp nhận & Điều phối xử lý sự cố khẩn cấp trong 60 phút</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="/citizen" class="text-xs bg-leaf hover:bg-emerald-700 text-white px-3 py-1.5 rounded transition flex items-center space-x-1">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <span>Cổng Người Dân (P01)</span>
+                </a>
+                <a href="/verifier" class="text-xs bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded transition flex items-center space-x-1">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Cổng Xác Minh (A19)</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6 space-y-6">
+        <!-- Thống kê nhanh trạng thái -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-500 font-medium">Tổng số phản ánh</span>
+                    <h3 class="text-2xl font-bold text-gray-800" id="stat-total">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-500 font-medium">Chờ xử lý</span>
+                    <h3 class="text-2xl font-bold text-amber-600" id="stat-pending">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-500 font-medium">Đang điều phối xử lý</span>
+                    <h3 class="text-2xl font-bold text-indigo-600" id="stat-processing">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-500 font-medium">Đã nghiệm thu On-chain</span>
+                    <h3 class="text-2xl font-bold text-green-600" id="stat-completed">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách sự cố -->
+        <div class="bg-white rounded-xl shadow p-5 border border-gray-200">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-table-list text-leaf text-lg"></i>
+                    <h2 class="font-bold text-forest">Danh Sách Sự Cố Cần Điều Phối Hiện Trường</h2>
+                </div>
+                <button onclick="loadIncidents()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded flex items-center space-x-1">
+                    <i class="fa-solid fa-rotate"></i>
+                    <span>Làm mới</span>
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b text-gray-600 font-semibold">
+                            <th class="p-3">Mã Vé</th>
+                            <th class="p-3">Mã Cây</th>
+                            <th class="p-3">Người Báo</th>
+                            <th class="p-3">Mô Tả Hiện Trạng</th>
+                            <th class="p-3">Mức Độ</th>
+                            <th class="p-3">Trạng Thái</th>
+                            <th class="p-3 text-center">Thao Tác Admin</th>
+                        </tr>
+                    </thead>
+                    <tbody id="incidents-tbody">
+                        <tr>
+                            <td colspan="7" class="p-4 text-center text-gray-400">Đang tải danh sách sự cố...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            loadIncidents();
+        });
+
+        async function loadIncidents() {
+            const tbody = document.getElementById('incidents-tbody');
+            tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tải dữ liệu...</td></tr>';
+
+            try {
+                const res = await fetch('/api/incidents');
+                const data = await res.json();
+
+                if (!data.success || !data.data || data.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-400">Hiện không có sự cố nào cần xử lý.</td></tr>';
+                    updateStats([]);
+                    return;
+                }
+
+                updateStats(data.data);
+
+                tbody.innerHTML = data.data.map(inc => {
+                    const sevBadge = inc.severity === 'Khẩn cấp' 
+                        ? 'bg-red-100 text-red-800 font-bold border border-red-300'
+                        : inc.severity === 'Cao' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-700';
+
+                    const stBadge = inc.status === 'Đã hoàn thành'
+                        ? 'bg-green-100 text-green-800 font-semibold'
+                        : inc.status === 'Đang xử lý' ? 'bg-indigo-100 text-indigo-800' : 'bg-amber-100 text-amber-800 font-semibold';
+
+                    return `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-3 font-mono font-bold text-forest">#INC-0${inc.id}</td>
+                            <td class="p-3 font-mono font-medium">${inc.tree_id ? 'TREE-00' + inc.tree_id : 'Cây ngoài danh mục'}</td>
+                            <td class="p-3">
+                                <div class="font-semibold text-gray-800">${inc.reporter_name}</div>
+                                <div class="text-[11px] text-gray-500 font-mono">${inc.reporter_phone}</div>
+                            </td>
+                            <td class="p-3 max-w-xs text-gray-700 font-medium">${inc.description}</td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] ${sevBadge}">${inc.severity}</span></td>
+                            <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] ${stBadge}">${inc.status}</span></td>
+                            <td class="p-3 text-center space-x-1">
+                                ${inc.status === 'Chờ xử lý' ? `
+                                    <button onclick="updateStatus(${inc.id}, 'Đang xử lý')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[11px]">
+                                        <i class="fa-solid fa-truck-fast mr-1"></i>Điều phối xe
+                                    </button>
+                                ` : ''}
+                                ${inc.status === 'Đang xử lý' ? `
+                                    <button onclick="resolveAndAnchor(${inc.id}, ${inc.tree_id || 1})" class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1 rounded text-[11px] font-semibold">
+                                        <i class="fa-solid fa-stamp mr-1"></i>Nghiệm thu On-chain
+                                    </button>
+                                ` : ''}
+                                ${inc.status === 'Đã hoàn thành' ? `
+                                    <span class="text-green-700 text-[11px] font-bold"><i class="fa-solid fa-circle-check mr-1"></i>Đã neo Hash</span>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-500">Lỗi tải danh sách: ${err.message}</td></tr>`;
+            }
+        }
+
+        function updateStats(list) {
+            document.getElementById('stat-total').innerText = list.length;
+            document.getElementById('stat-pending').innerText = list.filter(i => i.status === 'Chờ xử lý').length;
+            document.getElementById('stat-processing').innerText = list.filter(i => i.status === 'Đang xử lý').length;
+            document.getElementById('stat-completed').innerText = list.filter(i => i.status === 'Đã hoàn thành').length;
+        }
+
+        async function updateStatus(id, newStatus) {
+            try {
+                const res = await fetch(`/api/incidents/${id}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadIncidents();
+                } else {
+                    alert('Lỗi cập nhật: ' + data.message);
+                }
+            } catch (err) {
+                alert('Lỗi: ' + err.message);
+            }
+        }
+
+        async function resolveAndAnchor(incId, treeId) {
+            if (!confirm(`Xác nhận nghiệm thu hoàn thành sự cố #INC-0${incId} và ký số neo mã Hash lên Blockchain?`)) return;
+
+            try {
+                // 1. Cập nhật trạng thái sự cố sang Đã hoàn thành
+                await fetch(`/api/incidents/${incId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'Đã hoàn thành', resolved_at: new Date().toISOString() })
+                });
+
+                // 2. Ký gửi mã băm lên Blockchain
+                const recordId = `INC-00${incId}`;
+                const res = await fetch('/api/blockchain/anchor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        recordId: recordId,
+                        recordType: 'INCIDENT_REPORT',
+                        dataHash: 'b5a2c4e6f8091a3b5c7d9e1f3a5b7c9d2e4f6a8b0c2d4e6f8a0b2c4d6e8f0a2b'
+                    })
+                });
+                const anchorData = await res.json();
+
+                if (anchorData.success) {
+                    alert(`✅ Thành công! Sự cố đã được đóng và neo lên Blockchain với Transaction Hash:\n${anchorData.txHash}`);
+                    loadIncidents();
+                } else {
+                    alert('Lỗi neo chuỗi: ' + anchorData.message);
+                    loadIncidents();
+                }
+            } catch (err) {
+                alert('Lỗi: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>
+
