@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const blockchainClient = require('../services/blockchainClient');
 const hashService = require('../services/hashService');
+const db = require('../config/db');
 
 /**
  * ⛓️ BLOCKCHAIN API ROUTES (Dành cho Người 1 - Trần Quang Lâm)
@@ -74,6 +75,20 @@ router.post('/anchor', async (req, res) => {
         }
 
         const result = await blockchainClient.anchor(recordId, recordType, finalHash);
+
+        // Đồng bộ lưu vào bảng kiểm toán blockchain_audits
+        db.run(
+            `INSERT INTO blockchain_audits (record_type, record_id, data_hash, tx_hash, block_number, recorder_address, status, confirmed_at)
+             VALUES (?, ?, ?, ?, ?, ?, 'CONFIRMED', CURRENT_TIMESTAMP)`,
+            [recordType, recordId, finalHash, result.txHash, result.blockNumber, result.recorder]
+        );
+
+        // Đồng bộ cập nhật hash vào bảng SQLite tương ứng
+        if (recordType === 'TREE_PROFILE') {
+            db.run(`UPDATE trees SET data_hash = ? WHERE tree_code = ?`, [finalHash, recordId]);
+        } else if (recordType === 'CARE_LOG') {
+            db.run(`UPDATE care_records SET data_hash = ?, anchor_status = 'CONFIRMED' WHERE care_code = ?`, [finalHash, recordId]);
+        }
 
         res.status(201).json({
             success: true,

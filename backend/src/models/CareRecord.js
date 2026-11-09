@@ -78,30 +78,50 @@ const CareRecord = {
 
   /**
    * Ghi nhận hoạt động chăm sóc thực địa
-   * @param {Object} data { tree_id, caretaker_name, action_type, notes, action_date }
+   * @param {Object} data { care_code, tree_id, staff_id, caretaker_name, action_type, health_before, health_after, notes, data_hash, anchor_status, action_date }
    * @param {Function} callback (err, newRecord)
    */
   create: (data, callback) => {
     const {
+      care_code,
       tree_id,
+      staff_id,
       caretaker_name,
       action_type,
+      health_before,
+      health_after,
       notes,
+      image_before_url,
+      image_after_url,
+      data_hash,
+      anchor_status,
       action_date
     } = data;
 
     const query = `
-      INSERT INTO care_records (tree_id, caretaker_name, action_type, notes, action_date)
-      VALUES (?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))
+      INSERT INTO care_records (
+        care_code, tree_id, staff_id, caretaker_name, action_type,
+        health_before, health_after, notes, image_before_url, image_after_url,
+        data_hash, anchor_status, action_date
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))
     `;
 
     db.run(
       query,
       [
+        care_code || null,
         tree_id,
+        staff_id || null,
         caretaker_name,
         action_type,
+        health_before || null,
+        health_after || null,
         notes || '',
+        image_before_url || null,
+        image_after_url || null,
+        data_hash || null,
+        anchor_status || 'PENDING',
         action_date || null
       ],
       function (err) {
@@ -112,6 +132,21 @@ const CareRecord = {
         });
       }
     );
+  },
+
+  /**
+   * Cập nhật mã băm SHA-256 và trạng thái neo cho bản ghi chăm sóc
+   * @param {number|string} id 
+   * @param {string} data_hash 
+   * @param {string} anchor_status 
+   * @param {Function} callback 
+   */
+  updateAnchor: (id, data_hash, anchor_status, callback) => {
+    const query = `UPDATE care_records SET data_hash = ?, anchor_status = ? WHERE id = ?`;
+    db.run(query, [data_hash, anchor_status, id], function (err) {
+      if (err) return callback(err);
+      callback(null, { changes: this ? this.changes : 0 });
+    });
   },
 
   /**

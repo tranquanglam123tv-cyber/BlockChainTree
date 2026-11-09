@@ -30,7 +30,7 @@ async function runDemo() {
   // 2. Tạo cây xanh mới
   const runSuffix = Date.now().toString().slice(-4);
   const treeCode = `TREE-${runSuffix}`;
-  console.log(`\n[BƯỚC 2] 🌱 Thêm mới cây xanh ${treeCode} vào hệ thống (Nghiệp vụ Quản lý)...`);
+  console.log(`\n[BƯỚC 2] 🌱 Thêm mới cây xanh ${treeCode} (Tự động sinh QR & Neo Blockchain)...`);
   const treePayload = {
     tree_code: treeCode,
     species: 'Cây Sao Đen',
@@ -46,41 +46,21 @@ async function runDemo() {
     body: JSON.stringify(treePayload)
   });
   const createdTreeId = createTreeRes.data ? createTreeRes.data.id : 1;
+  const dataHash = createTreeRes.data ? createTreeRes.data.data_hash : '';
   console.log(`  -> Kết quả : ${createTreeRes.message || 'Thành công'}`);
   console.log(`  -> Tree ID: ${createdTreeId} | Code: ${treeCode} | Loài: ${treePayload.species}`);
+  console.log(`  -> Mã băm SHA-256 : ${dataHash}`);
+  if (createTreeRes.blockchain) {
+    console.log(`  -> Blockchain     : ${createTreeRes.blockchain.status} (Tx: ${createTreeRes.blockchain.txHash ? createTreeRes.blockchain.txHash.substring(0, 20) + '...' : 'pending'})`);
+  }
 
-  // 3. Tính toán mã băm SHA-256
-  console.log('\n[BƯỚC 3] 🔒 Tính toán dấu vân tay điện tử SHA-256 (Canonical Hashing)...');
-  const hashRes = await request('/api/blockchain/hash/tree', {
-    method: 'POST',
-    body: JSON.stringify(treePayload)
-  });
-  const dataHash = hashRes.dataHash;
-  console.log(`  -> Thuật toán: ${hashRes.algorithm}`);
-  console.log(`  -> SHA-256   : ${dataHash}`);
+  // 3. Xuất mã QR cho cây
+  console.log(`\n[BƯỚC 3] 📱 Xuất dữ liệu mã QR định danh cây xanh (${treeCode})...`);
+  const qrRes = await request(`/api/trees/${treeCode}/qr?format=json`);
+  console.log(`  -> QR Base64: ${qrRes.qr_code_url ? qrRes.qr_code_url.substring(0, 35) + '...' : 'Đã sinh'}`);
 
-  // 4. Neo bản ghi lên Smart Contract
-  console.log('\n[BƯỚC 4] ⛓️ Neo dấu bản ghi lên Smart Contract (Blockchain Anchoring)...');
-  const anchorRes = await request('/api/blockchain/anchor', {
-    method: 'POST',
-    body: JSON.stringify({
-      recordId: treeCode,
-      recordType: 'TREE_PROFILE',
-      dataHash: dataHash
-    })
-  });
-  console.log(`  -> Trạng thái: ${anchorRes.status}`);
-  console.log(`  -> TxHash    : ${anchorRes.txHash}`);
-  console.log(`  -> Block #   : ${anchorRes.blockNumber}`);
-  console.log(`  -> Gas Used  : ${anchorRes.gasUsed}`);
-
-  // 5. Xuất mã QR cho cây
-  console.log(`\n[BƯỚC 5] 📱 Sinh mã QR định danh cây xanh (${treeCode})...`);
-  const qrRes = await request(`/api/trees/${treeCode}/qr`);
-  console.log(`  -> QR Base64: ${qrRes.qr_code ? qrRes.qr_code.substring(0, 35) + '...' : 'Đã sinh'}`);
-
-  // 6. Người dân báo sự cố
-  console.log('\n[BƯỚC 6] ⚠️ Người dân quét mã QR & báo cáo sự cố (Cành gãy)...');
+  // 4. Người dân báo sự cố
+  console.log('\n[BƯỚC 4] ⚠️ Người dân quét mã QR & báo cáo sự cố (Cành gãy)...');
   const incidentRes = await request('/api/incidents', {
     method: 'POST',
     body: JSON.stringify({
@@ -93,36 +73,39 @@ async function runDemo() {
   });
   console.log(`  -> Báo cáo sự cố: ${incidentRes.message || 'Tiếp nhận thành công'}`);
 
-  // 7. Ghi nhận nhật ký chăm sóc
-  console.log('\n[BƯỚC 7] 🛠️ Đội công ích thực địa cắt tỉa & cập nhật nhật ký bảo dưỡng...');
+  // 5. Ghi nhận nhật ký chăm sóc (Tự động neo Blockchain)
+  console.log('\n[BƯỚC 5] 🛠️ Đội công ích thực địa cắt tỉa (Tự động neo Blockchain)...');
   const careRes = await request('/api/care-records', {
     method: 'POST',
     body: JSON.stringify({
       tree_id: createdTreeId,
       caretaker_name: 'Đội Công Ích Số 2',
-      action_type: 'Cắt tỉa nhánh khô',
+      action_type: 'Cắt tỉa',
       notes: 'Đã hoàn tất xử lý sự cố nhánh nứt an toàn'
     })
   });
   console.log(`  -> Nhật ký chăm sóc: ${careRes.message || 'Lưu thành công'}`);
+  if (careRes.blockchain) {
+    console.log(`  -> Blockchain Care : ${careRes.blockchain.status} (Tx: ${careRes.blockchain.txHash ? careRes.blockchain.txHash.substring(0, 20) + '...' : 'pending'})`);
+  }
 
-  // 8. Cổng A19: Xác minh tính toàn vẹn (Trường hợp Dữ liệu chuẩn -> TÍCH XANH)
-  console.log('\n[BƯỚC 8] ✅ CỔNG A19: Thanh tra quét QR xác minh tính toàn vẹn (Dữ liệu CHUẨN)...');
+  // 6. Cổng A19: Xác minh tính toàn vẹn (Trường hợp Dữ liệu chuẩn -> TÍCH XANH)
+  console.log('\n[BƯỚC 6] ✅ CỔNG A19: Thanh tra quét QR xác minh tính toàn vẹn (Dữ liệu CHUẨN)...');
   const verifyValidRes = await request(`/api/blockchain/verify/${treeCode}?currentHash=${dataHash}`);
   console.log(`  -> Kết quả xác thực : isValid = ${verifyValidRes.isValid}`);
   console.log(`  -> Trạng thái kiểm toán: ${verifyValidRes.auditStatus}`);
   console.log(`  -> Thông điệp        : ${verifyValidRes.message}`);
 
-  // 9. Cổng A19: Phát hiện gian lận khi dữ liệu bị sửa lén (CẢNH BÁO ĐỎ)
-  console.log('\n[BƯỚC 9] 🚨 CỔNG A19: Mô phỏng Hacker sửa lén dữ liệu trong Database...');
+  // 7. Cổng A19: Phát hiện gian lận khi dữ liệu bị sửa lén (CẢNH BÁO ĐỎ)
+  console.log('\n[BƯỚC 7] 🚨 CỔNG A19: Mô phỏng Hacker sửa lén dữ liệu trong Database...');
   const fakeHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
   const verifyTamperRes = await request(`/api/blockchain/verify/${treeCode}?currentHash=${fakeHash}`);
   console.log(`  -> Kết quả xác thực : isValid = ${verifyTamperRes.isValid}`);
   console.log(`  -> Trạng thái kiểm toán: ${verifyTamperRes.auditStatus}`);
   console.log(`  -> Thông điệp        : ${verifyTamperRes.message}`);
 
-  // 10. Chống gian lận: Thử ghi đè lên Smart Contract
-  console.log(`\n[BƯỚC 10] 🛡️ KIỂM TRA CHỐNG GIAN LẬN: Thử neo đè dữ liệu lên mã cây ${treeCode}...`);
+  // 8. Chống gian lận: Thử ghi đè lên Smart Contract
+  console.log(`\n[BƯỚC 8] 🛡️ KIỂM TRA CHỐNG GIAN LẬN: Thử neo đè dữ liệu lên mã cây ${treeCode}...`);
   const tamperAnchorRes = await request('/api/blockchain/anchor', {
     method: 'POST',
     body: JSON.stringify({
@@ -133,11 +116,11 @@ async function runDemo() {
   });
   console.log(`  -> Phản hồi từ Hợp đồng thông minh: ${tamperAnchorRes.message}`);
 
-  // 11. Khám phá sổ cái minh bạch (Explorer)
-  console.log('\n[BƯỚC 11] 🔍 CỔNG A18: Truy xuất toàn bộ Sổ cái Blockchain (Ledger Explorer)...');
+  // 9. Khám phá sổ cái minh bạch (Explorer)
+  console.log('\n[BƯỚC 9] 🔍 CỔNG A18: Truy xuất toàn bộ Sổ cái Blockchain (Ledger Explorer)...');
   const explorerRes = await request('/api/blockchain/explorer');
   console.log(`  -> Tổng số bản ghi trên chuỗi: ${explorerRes.totalRecords}`);
-  explorerRes.records.forEach((r, idx) => {
+  explorerRes.records.slice(-4).forEach((r, idx) => {
     console.log(`     #${idx + 1}. [${r.recordType}] ID: ${r.recordId} | Time: ${r.dateFormatted} | Hash: ${r.dataHash.substring(0, 16)}...`);
   });
 
