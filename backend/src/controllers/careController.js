@@ -1,5 +1,8 @@
 const CareRecord = require('../models/CareRecord');
 const Tree = require('../models/Tree');
+const db = require('../config/db');
+const hashService = require('../services/hashService');
+const blockchainClient = require('../services/blockchainClient');
 
 /**
  * 1. Lấy danh sách lịch sử chăm sóc (Hỗ trợ lọc theo tree_id, action_type và phân trang)
@@ -65,24 +68,24 @@ exports.getCareRecordById = (req, res) => {
 };
 
 /**
- * 3. Ghi nhận hoạt động chăm sóc thực địa mới từ nhân viên công viên (Quét QR)
+ * 3. Ghi nhận hoạt động chăm sóc thực địa mới & Tự động neo Blockchain (Roadmap Ngày 5-6)
  * Endpoint: POST /api/care-records
  */
 exports.addCareRecord = (req, res) => {
   const {
+    care_code,
     tree_id,
+    tree_code,
+    staff_id,
     caretaker_name,
     action_type,
+    health_before,
+    health_after,
     notes,
+    image_before_url,
+    image_after_url,
     action_date
   } = req.body;
-
-  if (!tree_id) {
-    return res.status(400).json({
-      success: false,
-      message: 'Vui lòng cung cấp mã ID cây xanh (tree_id)'
-    });
-  }
 
   if (!caretaker_name || !caretaker_name.trim()) {
     return res.status(400).json({
@@ -106,12 +109,22 @@ exports.addCareRecord = (req, res) => {
     });
   }
 
-  // Kiểm tra xem cây xanh có tồn tại không
-  Tree.getById(tree_id, (err, tree) => {
+  // Helper tìm tree theo ID hoặc theo Code
+  const findTree = (callback) => {
+    if (tree_id) {
+      Tree.getById(tree_id, callback);
+    } else if (tree_code) {
+      Tree.getByCode(tree_code, callback);
+    } else {
+      callback(null, null);
+    }
+  };
+
+  findTree((err, tree) => {
     if (err) {
       return res.status(500).json({
         success: false,
-        message: 'Lỗi kiểm tra thông tin cây',
+        message: 'Lỗi kiểm tra thông tin cây xanh',
         error: err.message
       });
     }
@@ -119,20 +132,40 @@ exports.addCareRecord = (req, res) => {
     if (!tree) {
       return res.status(404).json({
         success: false,
-        message: `Cây xanh với ID ${tree_id} không tồn tại trong hệ thống`
+        message: `Không tìm thấy cây xanh với thông tin cung cấp (tree_id: ${tree_id || 'none'}, tree_code: ${tree_code || 'none'})`
       });
     }
 
-    // Tiến hành lưu bản ghi chăm sóc
+    const actualTreeId = tree.id;
+    const actualCareCode = (care_code || `CARE-${Date.now().toString().slice(-4)}`).trim().toUpperCase();
+    const actualActionDate = action_date || new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    // 1. Tính toán mã băm SHA-256 chuẩn Master Spec cho CARE_LOG
+    const dataHash = hashService.hashCareLog({
+      tree_id: actualTreeId,
+      caretaker_name: caretaker_name.trim(),
+      action_type: action_type.trim(),
+      action_date: actualActionDate
+    });
+
+    // 2. Lưu bản ghi chăm sóc vào SQLite
     CareRecord.create(
       {
-        tree_id: parseInt(tree_id),
+        care_code: actualCareCode,
+        tree_id: actualTreeId,
+        staff_id: staff_id || null,
         caretaker_name: caretaker_name.trim(),
         action_type: action_type.trim(),
+        health_before: health_before || tree.health_status || null,
+        health_after: health_after || null,
         notes: (notes || '').trim(),
-        action_date: action_date || null
+        image_before_url: image_before_url || null,
+        image_after_url: image_after_url || null,
+        data_hash: dataHash,
+        anchor_status: 'PENDING',
+        action_date: actualActionDate
       },
-      (insertErr, newRecord) => {
+      async (insertErr, newRecord) => {
         if (insertErr) {
           return res.status(500).json({
             success: false,
@@ -141,12 +174,52 @@ exports.addCareRecord = (req, res) => {
           });
         }
 
-        // Response chuẩn theo đặc tả THUAN-05
+        // 3. Tự động neo bản ghi lên Blockchain (Nhiệm vụ 3 trong bàn giao)
+        let blockchainResult = null;
+        try {
+          const anchorResult = await blockchainClient.anchor(actualCareCode, 'CARE_LOG', dataHash);
+          blockchainResult = {
+            anchored: true,
+            status: 'CONFIRMED',
+            txHash: anchorResult.txHash,
+            blockNumber: anchorResult.blockNumber,
+            gasUsed: anchorResult.gasUsed,
+            recorder: anchorResult.recorder
+          };
+
+          // Cập nhật trạng thái CONFIRMED vào bảng care_records
+          CareRecord.updateAnchor(newRecord.id, dataHash, 'CONFIRMED', () => {});
+
+          // Lưu vết kiểm toán vào blockchain_audits
+          db.run(
+            `INSERT INTO blockchain_audits (record_type, record_id, data_hash, tx_hash, block_number, recorder_address, status, confirmed_at)
+             VALUES (?, ?, ?, ?, ?, ?, 'CONFIRMED', CURRENT_TIMESTAMP)`,
+            ['CARE_LOG', actualCareCode, dataHash, anchorResult.txHash, anchorResult.blockNumber, anchorResult.recorder]
+          );
+        } catch (bcErr) {
+          blockchainResult = {
+            anchored: false,
+            status: 'PENDING',
+            message: 'Không thể kết nối EVM hoặc đã neo: ' + bcErr.message
+          };
+
+          db.run(
+            `INSERT INTO blockchain_audits (record_type, record_id, data_hash, status, last_error)
+             VALUES (?, ?, ?, 'PENDING', ?)`,
+            ['CARE_LOG', actualCareCode, dataHash, bcErr.message]
+          );
+        }
+
         res.status(201).json({
           success: true,
           care_id: newRecord.id,
-          message: 'Đã lưu nhật ký bảo dưỡng thực địa',
-          data: newRecord
+          care_code: actualCareCode,
+          message: 'Đã lưu nhật ký bảo dưỡng thực địa và neo Blockchain thành công',
+          data: {
+            ...newRecord,
+            data_hash: dataHash
+          },
+          blockchain: blockchainResult
         });
       }
     );

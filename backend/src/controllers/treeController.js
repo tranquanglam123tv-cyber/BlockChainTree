@@ -1,5 +1,8 @@
 const QRCode = require('qrcode');
 const Tree = require('../models/Tree');
+const db = require('../config/db');
+const hashService = require('../services/hashService');
+const blockchainClient = require('../services/blockchainClient');
 
 /**
  * 1. Lấy danh sách cây xanh (Hỗ trợ phân trang và bộ lọc: loài cây, tình trạng sức khỏe)
@@ -66,7 +69,6 @@ exports.getTreeById = (req, res) => {
     Tree.getById(id, (err, row) => {
       if (err) return handleResult(err);
       if (row) return res.json({ success: true, data: row });
-      // Thử tìm theo mã tree_code nếu không tìm thấy id
       Tree.getByCode(id, handleResult);
     });
   } else {
@@ -122,33 +124,39 @@ exports.getNearbyTrees = (req, res) => {
 };
 
 /**
- * 4. Thêm mới cây xanh & Tự động sinh mã QR (Tuân thủ đặc tả THUAN-03)
+ * 4. Thêm mới cây xanh, tự sinh mã QR và tự động neo Blockchain (THUAN-03 & Roadmap Ngày 5-6)
  * Endpoint: POST /api/trees
  */
 exports.createTree = async (req, res) => {
   try {
     const {
       tree_code,
+      tree_type_id,
       species,
       location_name,
+      address,
       latitude,
       longitude,
       planted_date,
-      health_status
+      height_meter,
+      diameter_cm,
+      health_status,
+      status,
+      image_url
     } = req.body;
 
-    if (!tree_code || !species || !location_name) {
-      return res.status(400).json({
-        success: false,
-        message: 'Vui lòng cung cấp đầy đủ các trường bắt buộc: tree_code, species, location_name'
-      });
-    }
+    const actualCode = (tree_code || `TREE-${Date.now().toString().slice(-4)}`).trim().toUpperCase();
+    const actualSpecies = (species || 'Cây Đô Thị').trim();
+    const actualLocation = (location_name || 'Khu đô thị trung tâm').trim();
+    const actualPlantedDate = planted_date || new Date().toISOString().split('T')[0];
+    const actualLat = parseFloat(latitude) || 0;
+    const actualLng = parseFloat(longitude) || 0;
 
     // 1. Tự sinh nội dung QR chuẩn định dạng JSON theo đặc tả THUAN-03
     const qrPayload = {
       app: 'UrbanTree',
-      code: tree_code,
-      verifyUrl: `https://urbantree.hcm.gov.vn/verify/${tree_code}`
+      code: actualCode,
+      verifyUrl: `https://urbantree.hcm.gov.vn/verify/${actualCode}`
     };
 
     // 2. Chuyển thành DataURL (Base64 PNG) chuẩn { errorCorrectionLevel: 'H', width: 400 }
@@ -157,20 +165,37 @@ exports.createTree = async (req, res) => {
       width: 400
     });
 
-    // 3. Tự động lưu chuỗi Base64 này vào cột qr_code_url của bảng trees
+    // 3. Tính toán mã băm SHA-256 chuẩn Master Spec v2 (Zero Mismatch)
+    const treeProfileData = {
+      tree_code: actualCode,
+      species: actualSpecies,
+      location_name: actualLocation,
+      latitude: actualLat,
+      longitude: actualLng,
+      planted_date: actualPlantedDate
+    };
+    const dataHash = hashService.hashTreeProfile(treeProfileData);
+
+    // 4. Lưu bản ghi cây xanh vào SQLite
     Tree.create(
       {
-        tree_code,
-        species,
-        location_name,
-        latitude: parseFloat(latitude) || 0,
-        longitude: parseFloat(longitude) || 0,
-        planted_date: planted_date || new Date().toISOString().split('T')[0],
+        tree_code: actualCode,
+        tree_type_id: tree_type_id || null,
+        species: actualSpecies,
+        location_name: actualLocation,
+        address: address || actualLocation,
+        latitude: actualLat,
+        longitude: actualLng,
+        planted_date: actualPlantedDate,
+        height_meter: height_meter || null,
+        diameter_cm: diameter_cm || null,
         health_status: health_status || 'Tốt',
+        status: status || 'ACTIVE',
         qr_code_url: qrCodeUrl,
-        data_hash: null
+        image_url: image_url || null,
+        data_hash: dataHash
       },
-      (err, newTree) => {
+      async (err, newTree) => {
         if (err) {
           return res.status(500).json({
             success: false,
@@ -179,17 +204,55 @@ exports.createTree = async (req, res) => {
           });
         }
 
+        // 5. Tự động gọi sang Cổng Blockchain để neo mã băm SHA-256 (Nhiệm vụ 3 trong bàn giao)
+        let blockchainResult = null;
+        try {
+          const anchorResult = await blockchainClient.anchor(actualCode, 'TREE_PROFILE', dataHash);
+          blockchainResult = {
+            anchored: true,
+            status: 'CONFIRMED',
+            txHash: anchorResult.txHash,
+            blockNumber: anchorResult.blockNumber,
+            gasUsed: anchorResult.gasUsed,
+            recorder: anchorResult.recorder
+          };
+
+          // Lưu vết vào bảng kiểm toán blockchain_audits
+          db.run(
+            `INSERT INTO blockchain_audits (record_type, record_id, data_hash, tx_hash, block_number, recorder_address, status, confirmed_at)
+             VALUES (?, ?, ?, ?, ?, ?, 'CONFIRMED', CURRENT_TIMESTAMP)`,
+            ['TREE_PROFILE', actualCode, dataHash, anchorResult.txHash, anchorResult.blockNumber, anchorResult.recorder]
+          );
+        } catch (bcErr) {
+          // Xử lý mềm nếu Blockchain node chưa bật hoặc đã neo trước đó
+          blockchainResult = {
+            anchored: false,
+            status: 'PENDING',
+            message: 'Không thể kết nối EVM hoặc bản ghi đã neo: ' + bcErr.message
+          };
+
+          db.run(
+            `INSERT INTO blockchain_audits (record_type, record_id, data_hash, status, last_error)
+             VALUES (?, ?, ?, 'PENDING', ?)`,
+            ['TREE_PROFILE', actualCode, dataHash, bcErr.message]
+          );
+        }
+
         res.status(201).json({
           success: true,
-          message: 'Thêm mới cây xanh và sinh mã QR thành công',
-          data: newTree
+          message: 'Thêm mới cây xanh, tự sinh mã QR và neo Blockchain thành công',
+          data: {
+            ...newTree,
+            data_hash: dataHash
+          },
+          blockchain: blockchainResult
         });
       }
     );
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Lỗi hệ thống khi sinh mã QR cho cây',
+      message: 'Lỗi hệ thống khi tạo cây xanh và sinh mã QR',
       error: error.message
     });
   }

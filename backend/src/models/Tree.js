@@ -61,40 +61,56 @@ const Tree = {
   },
 
   /**
-   * Chèn bản ghi cây mới
+   * Chèn bản ghi cây mới (chuẩn hóa theo sơ đồ UrbanTree_ERD.puml)
    * @param {Object} data 
    * @param {Function} callback (err, result)
    */
   create: (data, callback) => {
     const {
       tree_code,
+      tree_type_id,
       species,
       location_name,
+      address,
       latitude,
       longitude,
       planted_date,
+      height_meter,
+      diameter_cm,
       health_status,
+      status,
       qr_code_url,
+      image_url,
       data_hash
     } = data;
 
     const query = `
-      INSERT INTO trees (tree_code, species, location_name, latitude, longitude, planted_date, health_status, qr_code_url, data_hash)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO trees (
+        tree_code, tree_type_id, species, location_name, address,
+        latitude, longitude, planted_date, height_meter, diameter_cm,
+        health_status, status, qr_code_url, image_url, data_hash
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.run(
       query,
       [
         tree_code,
+        tree_type_id || null,
         species,
         location_name,
-        latitude,
-        longitude,
-        planted_date,
+        address || location_name,
+        latitude || 0,
+        longitude || 0,
+        planted_date || new Date().toISOString().split('T')[0],
+        height_meter || null,
+        diameter_cm || null,
         health_status || 'Tốt',
-        qr_code_url,
-        data_hash
+        status || 'ACTIVE',
+        qr_code_url || null,
+        image_url || null,
+        data_hash || null
       ],
       function (err) {
         if (err) return callback(err);
@@ -111,25 +127,37 @@ const Tree = {
    */
   update: (id, data, callback) => {
     const {
+      tree_type_id,
       species,
       location_name,
+      address,
       latitude,
       longitude,
       planted_date,
+      height_meter,
+      diameter_cm,
       health_status,
+      status,
       qr_code_url,
+      image_url,
       data_hash
     } = data;
 
     const query = `
       UPDATE trees 
-      SET species = COALESCE(?, species),
+      SET tree_type_id = COALESCE(?, tree_type_id),
+          species = COALESCE(?, species),
           location_name = COALESCE(?, location_name),
+          address = COALESCE(?, address),
           latitude = COALESCE(?, latitude),
           longitude = COALESCE(?, longitude),
           planted_date = COALESCE(?, planted_date),
+          height_meter = COALESCE(?, height_meter),
+          diameter_cm = COALESCE(?, diameter_cm),
           health_status = COALESCE(?, health_status),
+          status = COALESCE(?, status),
           qr_code_url = COALESCE(?, qr_code_url),
+          image_url = COALESCE(?, image_url),
           data_hash = COALESCE(?, data_hash),
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
@@ -138,13 +166,19 @@ const Tree = {
     db.run(
       query,
       [
+        tree_type_id,
         species,
         location_name,
+        address,
         latitude,
         longitude,
         planted_date,
+        height_meter,
+        diameter_cm,
         health_status,
+        status,
         qr_code_url,
+        image_url,
         data_hash,
         id
       ],
