@@ -2,7 +2,7 @@
 
 > **Học phần:** Đồ án 4 / Blockchain Cơ bản (CNTT2311)  
 > **Nhóm thực hiện (2 thành viên):**  
-> - **Đặng Thế Thuận:** Backend nghiệp vụ, Database (SQLite), RESTful API, Seed data & Postman.  
+> - **Đoàn Thế Thuần:** Backend nghiệp vụ, Database (SQLite), RESTful API, Seed data & Postman.  
 > - **Trần Quang Lâm:** Smart Contract (Solidity), Hardhat Local Node, Hash Integrity (SHA-256), Frontend & Tích hợp xác minh.  
 > **Thời gian triển khai:** Kế hoạch 20 ngày (Theo tài liệu chuẩn `URBANTREE_ROADMAP_20_NGAY_2_THANH_VIEN.md`).
 
