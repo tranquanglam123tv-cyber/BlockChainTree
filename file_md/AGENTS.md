@@ -147,3 +147,49 @@ Take the first option that fully works:
 - A shortcut with a known limit gets a code comment in this form: `shortcut: <the limit>, <when to upgrade>`.
 
 Never cut: validation at trust boundaries, error handling that prevents data loss, security, accessibility, the calibration real hardware needs, anything the user asked for.
+
+## 🤖 HỆ THỐNG AGENT & PHÂN CÔNG TỰ ĐỘNG HÓA CHO ĐỒ ÁN 4 (URBANTREE NÂNG CAO)
+
+Dự án phát triển bởi nhóm 2 thành viên:
+- **Trần Quang Lâm (MSSV: 2311074)**: Blockchain, Smart Contract, Gemini AI Engines, Flutter UI/UX & Native Features.
+- **Đoàn Thế Thuần (MSSV: 2311031)**: Backend API, SQLite Database, Google OAuth 2.0 & OTP Service, Data Layer Flutter.
+
+---
+
+### 1. AI_ANALYST (Phụ trách: Lâm)
+**Trách nhiệm cốt lõi:**
+- Triển khai và tích hợp Gemini API (sử dụng SDK `@google/genai` với Gemini 1.5 / 2.0 Flash) tạo ra 4 Engine AI thông minh:
+  1. **TreeHealth AI**: Đánh giá chỉ số sức khỏe cây (0-100, thang điểm A+ đến F) từ tuổi cây, tần suất chăm sóc, lịch sử bệnh và ảnh chụp lá/thân.
+  2. **ClimateMatch AI**: Khuyến nghị 5 loài cây tối ưu theo tọa độ địa lý, vi khí hậu (nhiệt độ, lượng mưa, gió bão), loại đất và mục đích đô thị.
+  3. **RiskPredict AI**: Dự đoán xác suất ngã đổ (%) dựa trên tuổi cây > 20 năm, tần suất gãy cành, mùa giông bão, suy yếu rễ và độ gần công trình/lưới điện. Cảnh báo 4 mức độ: Thấp, Trung bình, Cao, Khẩn cấp.
+  4. **CareAdvisor AI**: Đề xuất phác đồ điều trị, phục hồi theo từng giai đoạn (Khẩn cấp 1-3 ngày, Dinh dưỡng 2-4 tuần, Phục hồi 1-3 tháng) kèm dự toán chi phí.
+- Xây dựng endpoints RESTful: `/api/v1/ai/trees/:id/health`, `/api/v1/ai/climate-match`, `/api/v1/ai/trees/:id/risk`, `/api/v1/ai/trees/:id/care-plan`, `/api/v1/ai/alerts`, `/api/v1/ai/analyze-image`.
+- Cấu hình API key bảo mật trong biến môi trường `.env` (`GEMINI_API_KEY`).
+
+### 2. MOBILE_DEVELOPER (Phụ trách: Lâm UI/UX + Thuần Data/API)
+**Trách nhiệm cốt lõi:**
+- Xây dựng ứng dụng di động đa nền tảng bằng **Flutter (v3.47+ / Dart 3.13+)** chạy mượt mà trên cả iOS và Android.
+- Quản trị trạng thái (State Management): **Riverpod** hoặc **BLoC**, kiến trúc Clean Architecture theo feature module (`features/auth`, `features/tree`, `features/qr_scanner`, `features/ai_analysis`, `features/incident`, `features/map`).
+- Tích hợp tính năng Native:
+  - Quét mã QR tốc độ cao qua camera bằng `mobile_scanner`.
+  - Định vị GPS và hiển thị bản đồ cây xanh Google Maps với `google_maps_flutter`.
+  - Chụp ảnh sự cố và hình ảnh chăm sóc thực địa trước/sau bằng `image_picker`.
+  - Đăng nhập 1 chạm với Google qua `google_sign_in` và xác thực OTP.
+  - Nhận cảnh báo ngã đổ, lịch bảo dưỡng khẩn qua Push Notifications (`firebase_messaging`).
+
+### 3. BACKEND_AUTH_SPECIALIST (Phụ trách: Thuần)
+**Trách nhiệm cốt lõi:**
+- Nâng cấp hệ thống Authentication chuẩn Enterprise:
+  - **Google OAuth 2.0**: Tiếp nhận Google ID Token từ Flutter/Web, verify qua Google API Client, tự động sync/tạo user profile.
+  - **Xác thực mã OTP 6 số**: Sinh mã ngẫu nhiên an toàn, lưu trữ tạm với TTL 5 phút, gửi qua Email Service (Nodemailer), rate limit chống spam.
+  - **JWT & Refresh Token Flow**: Cấp access token thời hạn ngắn + refresh token có thu hồi (revocation list).
+- Thiết kế và mở rộng cơ sở dữ liệu SQLite: Bảng `users`, `ai_evaluations`, `risk_alerts`, `otp_codes`.
+- Viết API Gateway trung gian kết nối Flutter App và các dịch vụ AI/Blockchain.
+
+### 4. BLOCKCHAIN_INTEGRITY_SPECIALIST (Phụ trách: Lâm)
+**Trách nhiệm cốt lõi:**
+- Duy trì và mở rộng Smart Contract `UrbanTreeRegistry.sol` trên EVM Localhost (Hardhat):
+  - Hashing chuẩn hóa SHA-256 cho hồ sơ cây, biên bản nghiệm thu và nhật ký chăm sóc.
+  - Bổ sung neo bằng chứng kiểm định AI (AI Analysis Audit Trail): Đảm bảo các cảnh báo rủi ro ngã đổ và đánh giá sức khỏe không thể bị sửa đổi lén để trốn tránh trách nhiệm an toàn đô thị.
+  - Cổng xác minh toàn vẹn A19: Trả về kết quả phân tích tính hợp lệ tức thì (`isValid`, `storedHash`, `currentHash`).
+

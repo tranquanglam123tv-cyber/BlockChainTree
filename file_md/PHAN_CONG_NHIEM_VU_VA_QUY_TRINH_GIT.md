@@ -541,3 +541,131 @@ git push -u origin feature/lam-blockchain-service
 
 ---
 *Tài liệu này là quy chuẩn kỹ thuật độc quyền của nhóm Đồ án UrbanTree. Mọi AI Agent tham gia dự án phải tuyệt đối tuân thủ theo chỉ dẫn này.*
+
+## 🚀 7. ĐẶC TẢ PHÂN CÔNG & QUY TRÌNH GIT NÂNG CẤP ĐỒ ÁN 4 (4 MODULE MỞ RỘNG)
+
+Để nâng cấp dự án UrbanTree từ mức MVP lên chuẩn **Đồ Án 4 (Đồ án tốt nghiệp / chuyên sâu)**, hai thành viên triển khai toàn diện 4 module nâng cấp:
+- **Module 1**: Ứng dụng Di động Flutter đa nền tảng (iOS & Android).
+- **Module 2**: Hệ thống Xác thực Bảo mật cao cấp (Google OAuth 2.0 + OTP Email 6 số + JWT Refresh).
+- **Module 3**: Hệ thống Trí tuệ Nhân tạo 4 Engine phân tích cây trồng (Gemini AI).
+- **Module 4**: Nâng cấp Giao diện Admin Web, Dashboard phân tích rủi ro & Hệ thống cảnh báo thời gian thực.
+
+---
+
+### 7.1. Bổ sung ma trận phân quyền thư mục & file mới
+
+```
+d:\TQLCNTT2311074\Nam4HK1\UrbunTree\
+│
+├── mobile/                                  👉 [QUYỀN HẠN: LÂM (UI/UX) + THUẬN (API/Data)]
+│   ├── lib/
+│   │   ├── core/                            # Theme, constants, network client
+│   │   ├── features/
+│   │   │   ├── auth/                        # Màn hình Login, Google Sign-In, OTP [LÂM/THUẬN]
+│   │   │   ├── tree/                        # Danh sách, chi tiết cây, hồ sơ sinh thái [LÂM]
+│   │   │   ├── qr_scanner/                  # Native camera quét mã QR [LÂM]
+│   │   │   ├── map/                         # Google Maps định vị cây xanh [LÂM]
+│   │   │   ├── ai_analysis/                 # Hiển thị điểm sức khỏe, cảnh báo ngã đổ, phác đồ [LÂM]
+│   │   │   ├── care/                        # Ghi nhận chăm sóc thực địa, ảnh chụp [LÂM]
+│   │   │   └── incident/                    # Báo cáo sự cố người dân, định vị GPS [LÂM]
+│   │   └── data/                            # Models, Repositories, Providers [THUẬN]
+│   ├── pubspec.yaml                         🔒 [DÙNG CHUNG: KHÔNG XUNG ĐỘT DEPENDENCY]
+│   └── README.md
+│
+├── backend/src/
+│   ├── services/
+│   │   ├── geminiAiService.js               👉 [QUYỀN HẠN: LÂM] 4 AI Engines gọi Gemini API
+│   │   ├── otpService.js                    👉 [QUYỀN HẠN: THUẬN] Sinh mã OTP, gửi Email Nodemailer
+│   │   └── googleAuthService.js             👉 [QUYỀN HẠN: THUẬN] Verify Google ID Token
+│   │
+│   ├── controllers/
+│   │   ├── authController.js                👉 [QUYỀN HẠN: THUẬN] Logic Google Sign-In, Request/Verify OTP
+│   │   └── aiController.js                  👉 [QUYỀN HẠN: LÂM] Phân tích sức khỏe, khí hậu, dự đoán ngã đổ
+│   │
+│   └── routes/
+│       ├── authRoutes.js                    👉 [QUYỀN HẠN: THUẬN] Router /api/v1/auth/*
+│       └── aiRoutes.js                      👉 [QUYỀN HẠN: LÂM] Router /api/v1/ai/*
+```
+
+---
+
+### 7.2. Chi tiết phân công 4 Module Nâng cấp
+
+#### 👨‍💻 BẠN ĐOÀN THẾ THUẬN (Backend, Authentication & Data Layer)
+1. **Nhiệm vụ THUAN-ADV-01: Hệ thống Xác thực Google Sign-In & OTP:**
+   - Cài đặt và cấu hình thư viện `google-auth-library`, `nodemailer`.
+   - Viết controller xử lý `POST /api/v1/auth/google`: nhận token từ client, xác thực danh tính, tự động lưu thông tin user.
+   - Viết controller xử lý `POST /api/v1/auth/request-otp` và `POST /api/v1/auth/verify-otp`: sinh mã 6 số ngẫu nhiên, hạn dùng 5 phút, gửi email định dạng HTML chuyên nghiệp.
+   - Quản lý JWT Token: sinh cặp `accessToken` (15 phút) và `refreshToken` (7 ngày), middleware kiểm tra quyền hạn chặt chẽ.
+2. **Nhiệm vụ THUAN-ADV-02: Nâng cấp Cơ sở dữ liệu cho AI & Auth:**
+   - Bổ sung bảng `users` (id, email, full_name, avatar, role, auth_provider, created_at).
+   - Bổ sung bảng `otp_requests` (id, email, otp_code, expires_at, is_used).
+   - Bổ sung bảng `ai_risk_logs` (id, tree_id, risk_score, risk_level, fall_probability, recommendations, created_at) để lưu lại các phân tích phục vụ tra cứu lịch sử.
+3. **Nhiệm vụ THUAN-ADV-03: Xây dựng Data Layer cho Mobile Flutter:**
+   - Xây dựng các lớp Model (fromJSON / toJSON) trên Flutter: `UserModel`, `TreeModel`, `AiHealthModel`, `RiskPredictionModel`.
+   - Cấu hình thư viện `dio` với Interceptor tự động gắn JWT Token và bắt lỗi kết nối.
+
+#### 👨‍💻 BẠN TRẦN QUANG LÂM (AI Engines, Flutter UI/UX & Blockchain Expansion)
+1. **Nhiệm vụ LAM-ADV-01: Triển khai 4 Engine AI thông minh bằng Gemini API:**
+   - Tích hợp `@google/genai` với API Key được cấp, xây dựng `geminiAiService.js`:
+     - **Engine 1 - TreeHealth AI (`GET /api/v1/ai/trees/:id/health`)**: Phân tích dữ liệu chăm sóc và tuổi cây, tính điểm sức khỏe từ 0-100 (Grade A+ đến F).
+     - **Engine 2 - ClimateMatch AI (`POST /api/v1/ai/climate-match`)**: Phân tích tọa độ, lượng mưa, khí hậu TP.HCM / nhiệt đới gió mùa để gợi ý top 5 loài cây tối ưu.
+     - **Engine 3 - RiskPredict AI (`GET /api/v1/ai/trees/:id/risk`)**: Dự báo xác suất ngã đổ (%) dựa trên tuổi cây > 20 năm, giông bão, tần suất sự cố, trả về mức độ cảnh báo (Thấp / Trung bình / Cao / Khẩn cấp).
+     - **Engine 4 - CareAdvisor AI (`GET /api/v1/ai/trees/:id/care-plan`)**: Sinh phác đồ điều trị 3 giai đoạn (Khẩn cấp, Dinh dưỡng, Phục hồi) kèm ước lượng chi phí.
+2. **Nhiệm vụ LAM-ADV-02: Phát triển Ứng dụng Di động Flutter:**
+   - Khởi tạo dự án Flutter (Flutter 3.47+, Dart 3.13+), thiết lập theme màu sinh thái Verdant `#174B36`, `#347A50`, font chữ Inter/Roboto.
+   - Xây dựng màn hình:
+     - `LoginScreen` & `OtpVerificationScreen`: Đăng nhập Google 1 chạm và nhập mã xác thực OTP.
+     - `DashboardScreen`: Thống kê tổng số cây, số lượng cảnh báo ngã đổ đỏ/cam, tác vụ cần xử lý.
+     - `QrScannerScreen`: Mở camera quét mã nhãn cây tốc độ cao, điều hướng ngay tới chi tiết cây.
+     - `TreeDetailScreen` & `AiAnalysisScreen`: Hiển thị thông tin sinh thái, biểu đồ sức khỏe AI, huy hiệu rủi ro ngã đổ, khuyến nghị của CareAdvisor.
+     - `MapScreen`: Bản đồ Google Maps định vị cây xung quanh, lọc theo mức độ rủi ro hoặc tình trạng sức khỏe.
+3. **Nhiệm vụ LAM-ADV-03: Neo Bảo chứng Báo cáo AI lên Blockchain:**
+   - Mở rộng hàm băm `hashAiRiskReport(report)` để tạo mã SHA-256 từ kết quả cảnh báo rủi ro ngã đổ.
+   - Neo mã băm của các cảnh báo rủi ro mức độ "Khẩn cấp" lên Smart Contract `UrbanTreeRegistry.sol`, đảm bảo các dữ liệu kiểm định an toàn cây xanh không thể bị xóa hoặc thay đổi lén sau khi xảy ra sự cố thiên tai.
+
+---
+
+### 7.3. Quy trình nhánh Git & Phối hợp Nâng cấp
+
+| Nhánh Git | Phạm vi công việc | Người phụ trách |
+|---|---|:---:|
+| `feature/thuan-auth-google-otp` | Google OAuth, OTP service, bảng users/otp, middleware JWT | Bạn Thuận |
+| `feature/lam-gemini-ai-engines` | 4 AI Engines, routes AI, prompt engineering, AI unit tests | Bạn Lâm |
+| `feature/lam-flutter-ui` | UI Flutter: Auth, Dashboard, QR Scanner, Maps, AI Cards | Bạn Lâm |
+| `feature/thuan-flutter-data` | Data Layer Flutter: Dio client, repositories, models | Bạn Thuận |
+| `feature/lam-blockchain-ai-anchor` | Hash và neo bản ghi AI risk report lên Smart Contract | Bạn Lâm |
+
+**Quy tắc Git bất biến:**
+```powershell
+# 1. Luôn rebase từ main mới nhất
+git checkout main
+git pull origin main
+
+# 2. Tạo nhánh làm việc theo phân công
+git checkout -b feature/<ten-nhanh>
+
+# 3. Chỉ commit file thuộc quyền hạn được chỉ định tại mục 7.1
+git add <duong-dan-file>
+git commit -m "feat(ai): integrate gemini 4-engine analysis service"
+
+# 4. Push và tạo PR để người còn lại review
+git push -u origin feature/<ten-nhanh>
+```
+
+---
+
+## 🏁 BẢNG TỔNG KẾT TIÊU CHÍ NGHIỆM THU ĐỒ ÁN 4 NÂNG CAO
+
+| Hạng mục | Tiêu chí đạt chuẩn Đồ Án 4 | Người nghiệm thu |
+|:---|:---|:---:|
+| **Xác thực Google & OTP** | Đăng nhập Google thành công, mã OTP 6 số gửi về email và xác thực trong 5 phút | Bạn Thuận |
+| **Bảo mật JWT** | Token hết hạn tự refresh mượt mà, phân quyền Admin / Staff chặt chẽ | Bạn Thuận |
+| **AI TreeHealth & RiskPredict** | Trả về điểm sức khỏe 0-100, xác suất ngã đổ và mức cảnh báo chính xác theo dữ liệu đầu vào | Bạn Lâm |
+| **AI ClimateMatch & CareAdvisor** | Đưa ra top 5 loài cây phù hợp khí hậu TP.HCM và phác đồ điều trị 3 giai đoạn chi tiết | Bạn Lâm |
+| **Ứng dụng Mobile Flutter** | Chạy mượt mà trên iOS/Android giả lập/máy thật, quét QR camera nhạy, Google Maps mượt | Cả 2 cùng test |
+| **Bảo chứng AI trên Blockchain** | Cảnh báo ngã đổ nguy cấp được băm SHA-256 và neo lên Smart Contract, verify tích xanh A19 | Bạn Lâm |
+| **Kịch bản Demo Tốt nghiệp** | Demo thông suốt 10-12 phút bao gồm: Web Admin, Flutter App, Quét QR, Báo cáo AI, Đối chiếu Blockchain | Cả 2 cùng diễn tập |
+
+---
+*Tài liệu phân công kỹ thuật được cập nhật hoàn thiện dành riêng cho Đồ Án 4 UrbanTree.*

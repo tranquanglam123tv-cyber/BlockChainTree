@@ -1525,3 +1525,300 @@ Không dùng `git add .` nếu working tree có file của người kia, databas
 ---
 
 **KẾT LUẬN V2:** Thuận sở hữu backend nghiệp vụ + SQLite + API; Lâm sở hữu hash + blockchain + contract; blockchain controller/router và entrypoint do Thuận giữ; hai bên giao tiếp qua facade/interface và tài liệu contract đã merge. Figma không còn là task. Mọi thay đổi đi qua branch riêng, PR, review, test và merge; không làm trực tiếp trên `main`. Đây là cơ chế quan trọng nhất để hai ChatGPT không tạo hai phiên bản kiến trúc hoặc ghi đè code của nhau.
+
+
+---
+
+# 🌟 PHẦN II — ROADMAP MỞ RỘNG ĐỒ ÁN 4: NÂNG CẤP TOÀN DIỆN 4 MODULE (20 NGÀY BỔ SUNG)
+
+> **Mục tiêu chiến lược:** Nâng cấp hệ thống UrbanTree từ mức MVP lên quy chuẩn **Đồ Án 4 (Đồ án tốt nghiệp / chuyên sâu)** bằng việc triển khai trọn vẹn 4 module công nghệ cao:
+> 1. **Flutter Mobile Native (iOS & Android)**: Quét QR camera native, Google Maps định vị cây, giao diện người dùng mượt mà.
+> 2. **Authentication đa phương thức**: Đăng nhập 1 chạm Google OAuth 2.0, Xác thực mã OTP 6 số qua Email, cơ chế JWT Refresh Token.
+> 3. **Hệ thống Trí tuệ Nhân tạo Gemini 4 Engine**:
+>    - 🏥 *TreeHealth AI*: Đánh giá mức độ sức khỏe cây xanh (0-100 điểm, xếp loại A+ đến F).
+>    - 🌤️ *ClimateMatch AI*: Lựa chọn cây trồng tối ưu theo vùng khí hậu và điều kiện thổ nhưỡng.
+>    - ⚠️ *RiskPredict AI*: Dự đoán xác suất và phát cảnh báo cây ngã đổ theo mùa mưa bão, tuổi cây và lịch sử sự cố.
+>    - 💊 *CareAdvisor AI*: Đề xuất phác đồ điều trị và kế hoạch chăm sóc phục hồi 3 giai đoạn.
+> 4. **Bảo chứng Trí tuệ Nhân tạo trên Blockchain & Dashboard An toàn Đô thị**: Neo kết quả đánh giá nguy cơ ngã đổ lên Smart Contract để chống gian lận và chối bỏ trách nhiệm.
+
+---
+
+## 📅 BẢNG TIẾN ĐỘ 20 NGÀY BỔ SUNG (PHASE A ĐẾN PHASE H)
+
+```mermaid
+gantt
+    title KẾ HOẠCH NÂNG CẤP ĐỒ ÁN 4 — 20 NGÀY BỔ SUNG
+    dateFormat  YYYY-MM-DD
+    section Phase A: Khởi tạo & Auth Setup
+    Setup Flutter & Firebase           :a1, 2026-11-11, 3d
+    section Phase B: Google Sign-In & OTP
+    Hoàn thiện Google OAuth & OTP Flow :b1, after a1, 3d
+    section Phase C: Gemini AI Engines 1 & 2
+    TreeHealth & ClimateMatch AI       :c1, after b1, 3d
+    section Phase D: Gemini AI Engines 3 & 4
+    RiskPredict & CareAdvisor AI       :d1, after c1, 3d
+    section Phase E: Flutter UI Lõi
+    Dashboard, QR Scanner, Google Maps :e1, after d1, 3d
+    section Phase F: Flutter AI & Incident
+    AI Result UI, Incident & Care Form :f1, after e1, 2d
+    section Phase G: FCM & Kiểm thử E2E
+    Push Notification & Security Audit :g1, after f1, 2d
+    section Phase H: Báo cáo & Diễn tập
+    Release Đồ Án 4 & Diễn tập bảo vệ :h1, after g1, 1d
+```
+
+---
+
+### 🚀 GIAI ĐOẠN A: Khởi tạo Dự án Flutter & Chuẩn bị Môi trường Auth (Ngày 1–3)
+
+#### Ngày 1: Setup Dự án Flutter & Kiến trúc Clean Architecture
+- **Bạn Lâm:**
+  - Khởi tạo thư mục `mobile/` bằng Flutter 3.47+ (`flutter create --org com.urbantree.app mobile`).
+  - Thiết lập cấu trúc thư mục Feature-first: `core/`, `features/auth/`, `features/tree/`, `features/qr_scanner/`, `features/ai_analysis/`, `data/`.
+  - Khởi tạo Design System sinh thái: Bảng màu Verdant (`#174B36`, `#347A50`, `#4C956C`, `#F6F5EC`), cấu hình Typography và Dark/Light mode theme.
+- **Bạn Thuận:**
+  - Cài đặt các thư viện backend cần thiết: `google-auth-library`, `nodemailer`, `dotenv`.
+  - Cấu hình Mail Service (Gmail SMTP / SendGrid) trong `backend/src/config/mail.js` để chuẩn bị gửi mã OTP.
+- **Đầu ra nghiệm thu:** `flutter run` khởi chạy màn hình Splash thành công trên thiết bị; Backend gửi email test thành công.
+
+#### Ngày 2: Thiết kế Schema Dữ liệu Mở rộng & DDL Migration
+- **Bạn Thuận:**
+  - Bổ sung bảng `users` vào SQLite: `id`, `email`, `full_name`, `avatar_url`, `role` (ADMIN, STAFF, CITIZEN), `auth_provider` (LOCAL, GOOGLE), `created_at`.
+  - Bổ sung bảng `otp_codes`: `id`, `email`, `code`, `expires_at`, `is_verified`.
+  - Bổ sung bảng `ai_assessments`: `id`, `tree_id`, `engine_type`, `score`, `risk_level`, `result_json`, `created_at`.
+- **Bạn Lâm:**
+  - Xây dựng Data Models Dart tương ứng trên Flutter: `UserModel`, `TreeModel`, `AiAssessmentModel`.
+  - Thiết lập HTTP Client `Dio` kèm Interceptor tự động gắn Bearer Token và xử lý lỗi mạng.
+- **Đầu ra nghiệm thu:** SQLite migration chạy không lỗi; Unit test serialize JSON trong Flutter đạt 100%.
+
+#### Ngày 3: Tích hợp SDK Firebase & Google Cloud Console
+- **Bạn Lâm:**
+  - Đăng ký ứng dụng trên Firebase Console, tải file `google-services.json` (Android) và `GoogleService-Info.plist` (iOS).
+  - Cài đặt các package: `firebase_core`, `firebase_auth`, `google_sign_in`, `flutter_riverpod`.
+- **Bạn Thuận:**
+  - Lấy OAuth Client ID từ Google Cloud Console, cấu hình `GOOGLE_CLIENT_ID` trong file `.env` của backend.
+  - Viết module `backend/src/services/googleAuthService.js` để giải mã và xác thực Google ID Token.
+- **Đầu ra nghiệm thu:** Backend verify được Google ID Token mẫu; Flutter khởi tạo Firebase thành công.
+
+---
+
+### 🔐 GIAI ĐOẠN B: Hoàn thiện Luồng Xác thực Google Sign-In & OTP (Ngày 4–6)
+
+#### Ngày 4: Xây dựng API Đăng nhập Google & Xác thực OTP
+- **Bạn Thuận:**
+  - Viết `authController.js` với các endpoint:
+    - `POST /api/v1/auth/google`: Tiếp nhận `idToken`, xác thực với Google, lưu hoặc cập nhật tài khoản, trả về JWT Access Token (15m) + Refresh Token (7d).
+    - `POST /api/v1/auth/request-otp`: Nhận email, sinh mã ngẫu nhiên 6 số, đặt thời gian hết hạn sau 5 phút, gửi email chứa mã OTP giao diện HTML đẹp mắt.
+    - `POST /api/v1/auth/verify-otp`: Kiểm tra mã OTP, nếu hợp lệ thì kích hoạt phiên làm việc.
+- **Bạn Lâm:**
+  - Viết Unit Tests trên Backend bằng Mocha/Jest kiểm tra các trường hợp: mã OTP sai, mã hết hạn, email không tồn tại.
+- **Đầu ra nghiệm thu:** Postman gửi nhận OTP và xác thực thành công 100%.
+
+#### Ngày 5: Giao diện Đăng nhập & Xác thực OTP trên Flutter
+- **Bạn Lâm:**
+  - Xây dựng màn hình `LoginScreen`: Nút bấm "Đăng nhập bằng Google" có logo chuẩn Google, ô nhập Email nhận OTP.
+  - Xây dựng màn hình `OtpVerificationScreen`: Ô nhập mã 6 số (Pinput), đồng hồ đếm ngược 300 giây (5 phút), nút gửi lại mã.
+  - Tích hợp Riverpod AuthProvider quản lý trạng thái đăng nhập toàn ứng dụng.
+- **Bạn Thuận:**
+  - Viết `backend/src/middlewares/authMiddleware.js` để bảo vệ các route nhạy cảm (phân quyền ADMIN, STAFF, CITIZEN).
+- **Đầu ra nghiệm thu:** Người dùng nhấn Google Sign-In hoặc nhập OTP từ email để đăng nhập thành công vào app Flutter.
+
+#### Ngày 6: Cơ chế Tự động Refresh Token & Bảo mật Session
+- **Bạn Thuận:**
+  - Xây dựng endpoint `POST /api/v1/auth/refresh-token` cấp lại Access Token mới khi token cũ hết hạn.
+  - Endpoint `POST /api/v1/auth/logout` thu hồi token.
+- **Bạn Lâm:**
+  - Cài đặt `flutter_secure_storage` lưu trữ an toàn JWT Token trên Keychain (iOS) và Keystore (Android).
+  - Cấu hình Dio Interceptor tự động gọi refresh token khi gặp lỗi HTTP 401.
+- **Đầu ra nghiệm thu:** Token hết hạn tự động gia hạn ngầm mà không làm văng người dùng ra khỏi app.
+
+---
+
+### 🤖 GIAI ĐOẠN C: Trí Tuệ Nhân Tạo Gemini — Engine 1 & 2 (Ngày 7–9)
+
+#### Ngày 7: Tích hợp Gemini SDK & Cấu trúc Service AI
+- **Bạn Lâm:**
+  - Tích hợp `@google/genai` vào backend, bảo mật khóa API Key trong `.env`.
+  - Xây dựng `geminiAiService.js` với cơ chế Retry khi gặp rate limit và cấu hình Structured Output (JSON Schema) để đảm bảo kết quả trả về luôn chuẩn cấu trúc.
+- **Bạn Thuận:**
+  - Viết hàm lấy tổng hợp thông tin lịch sử của cây: tuổi cây, số lần chăm sóc trong 6 tháng, số sự cố, trạng thái sức khỏe từ DB để làm đầu vào (Prompt Context) cho Gemini.
+- **Đầu ra nghiệm thu:** Backend gọi Gemini API và nhận về kết quả JSON hợp lệ trong vòng 2-3 giây.
+
+#### Ngày 8: Triển khai Engine 1 — TreeHealth AI (Đánh giá Sức khỏe Cây)
+- **Bạn Lâm:**
+  - Xây dựng Prompt kỹ thuật chuyên môn lâm nghiệp đô thị phân tích 4 nhóm yếu tố: Sinh lý cây, lịch sử chăm sóc, tiền sử sâu bệnh và môi trường xung quanh.
+  - Tính điểm sức khỏe tổng hợp (Health Score: 0-100), phân loại Grade:
+    - 90–100: **A+** (Rất khỏe mạnh)
+    - 80–89: **A** (Khỏe mạnh bình thường)
+    - 70–79: **B** (Cần chú ý theo dõi)
+    - 50–69: **C** (Suy yếu - cần chăm sóc đặc biệt)
+    - 30–49: **D** (Nguy hiểm)
+    - 0–29: **F** (Chết / Mục rỗng gốc)
+  - Viết endpoint `GET /api/v1/ai/trees/:id/health`.
+- **Bạn Thuận:**
+  - Lưu kết quả đánh giá vào bảng `ai_assessments` để theo dõi tiến trình hồi phục của cây qua thời gian.
+- **Đầu ra nghiệm thu:** Endpoint trả về đầy đủ điểm số, grade, phân tích chi tiết từng tiêu chí và danh sách khuyến nghị.
+
+#### Ngày 9: Triển khai Engine 2 — ClimateMatch AI (Lựa chọn Cây phù hợp Khí hậu)
+- **Bạn Lâm:**
+  - Xây dựng Engine `POST /api/v1/ai/climate-match`: Nhận tọa độ GPS (hoặc khu vực như TP.HCM, Hà Nội, Đà Nẵng), loại đất (đất cát, đất sét, đất thịt), mục đích trồng (bóng mát, chắn bão, làm sạch không khí, cảnh quan công viên).
+  - Gemini AI đối chiếu với cơ sở dữ liệu thực vật học đô thị nhiệt đới, đề xuất top 5 loài cây tối ưu kèm điểm tương thích (%) và cảnh báo về rễ cây/tán lá.
+- **Bạn Thuận:**
+  - Viết Swagger/Postman tài liệu hóa endpoint phục vụ tích hợp.
+- **Đầu ra nghiệm thu:** Hệ thống đưa ra danh sách đề xuất chuẩn xác (Ví dụ: Cây Giáng Hương, Bàng Đài Loan, Lim Sét) kèm lý do thuyết phục.
+
+---
+
+### ⚠️ GIAI ĐOẠN D: Trí Tuệ Nhân Tạo Gemini — Engine 3 & 4 (Ngày 10–12)
+
+#### Ngày 10: Triển khai Engine 3 — RiskPredict AI (Dự đoán & Cảnh báo Ngã Đổ)
+- **Bạn Lâm:**
+  - Xây dựng mô hình tính toán rủi ro ngã đổ kết hợp giữa dữ liệu thống kê và phân tích suy luận Gemini:
+    - Trọng số tuổi: Cây trên 20 năm tăng xác suất gục gãy.
+    - Tiền sử gãy cành trong các năm trước.
+    - Thiếu cắt tỉa trước mùa mưa bão (> 90 ngày chưa tỉa).
+    - Vị trí hiểm trở: Gần đường dây điện cao thế, sát nhà dân, vỉa hè hẹp.
+  - Phân loại 4 cấp độ cảnh báo: **Thấp** (Xanh), **Trung bình** (Vàng), **Cao** (Cam), **Khẩn cấp** (Đỏ).
+  - Viết endpoint `GET /api/v1/ai/trees/:id/risk` và `GET /api/v1/ai/alerts` (danh sách các cây có nguy cơ ngã đổ cao nhất thành phố).
+- **Bạn Thuận:**
+  - Tối ưu query SQL để lấy danh sách cây cần cảnh báo nhanh chóng phục vụ bản đồ nhiệt.
+- **Đầu ra nghiệm thu:** Dự đoán chính xác cây có nguy cơ gãy đổ cao kèm thời hạn can thiệp (trong 24h, 48h hoặc 7 ngày).
+
+#### Ngày 11: Triển khai Engine 4 — CareAdvisor AI (Đề xuất Phác đồ Khắc phục)
+- **Bạn Lâm:**
+  - Xây dựng Engine `GET /api/v1/ai/trees/:id/care-plan`: Phân tích căn nguyên bệnh lý (nấm lá, sâu đục thân, rỗng ruột) và đưa ra phác đồ điều trị 3 giai đoạn:
+    - *Giai đoạn 1 (Khẩn cấp 1-3 ngày)*: Cắt tỉa hạ tải tán cây, bôi keo liền sẹo, phun thuốc sinh học.
+    - *Giai đoạn 2 (Dinh dưỡng 2-4 tuần)*: Bón phân vi sinh kích rễ, cải tạo đất gốc.
+    - *Giai đoạn 3 (Phục hồi 1-3 tháng)*: Theo dõi định kỳ, đánh giá lại sức khỏe.
+  - Dự toán vật tư và chi phí ước tính theo thời giá.
+- **Bạn Thuận:**
+  - Tích hợp liên kết phác đồ điều trị trực tiếp vào nút "Giao việc cho Tổ Chăm sóc".
+- **Đầu ra nghiệm thu:** Phác đồ chi tiết từng bước, có tính khả thi cao ngoài thực địa.
+
+#### Ngày 12: Bảo chứng Đánh giá AI trên Smart Contract (Blockchain AI Anchor)
+- **Bạn Lâm:**
+  - Viết hàm tính băm `hashAiRiskReport(assessment)`: Chuẩn hóa canonical string của bản ghi cảnh báo ngã đổ mức độ "Khẩn cấp".
+  - Mở rộng gọi hàm `anchorRecord()` của `UrbanTreeRegistry.sol` để lưu mã băm lên chuỗi khối.
+- **Bạn Thuận:**
+  - Bổ sung trường `blockchain_tx_hash` vào bảng `ai_assessments`.
+- **Đầu ra nghiệm thu:** Bản ghi cảnh báo ngã đổ được neo bất biến lên Local EVM; trang xác minh A19 trả về trạng thái toàn vẹn `VERIFIED`.
+
+---
+
+### 📱 GIAI ĐOẠN E: Phát triển Màn hình Cốt lõi trên Flutter (Ngày 13–15)
+
+#### Ngày 13: Màn hình Dashboard Tổng quan & Bản đồ Google Maps
+- **Bạn Lâm:**
+  - Xây dựng `DashboardScreen` trên Flutter:
+    - Thẻ thống kê (Metric Cards): Tổng số cây, cây khỏe mạnh, cây có nguy cơ ngã đổ, sự cố cần xử lý.
+    - Banner cảnh báo AI: Hiển thị ngay các cây đạt mức rủi ro Đỏ cần can thiệp khẩn.
+  - Tích hợp `google_maps_flutter`:
+    - Hiển thị marker cây với màu sắc theo cấp độ rủi ro (Xanh/Vàng/Cam/Đỏ).
+    - Nhấn vào Marker mở BottomSheet tóm tắt thông tin cây và chỉ số sức khỏe.
+- **Bạn Thuận:**
+  - Viết API `GET /api/v1/trees/map-markers` tối ưu hóa payload nhẹ để tải hàng trăm marker mượt mà.
+- **Đầu ra nghiệm thu:** Bản đồ load nhanh, zoom/pan mượt mà, phân loại màu sắc marker chuẩn xác.
+
+#### Ngày 14: Tính năng Quét Mã QR Camera Native
+- **Bạn Lâm:**
+  - Xây dựng `QrScannerScreen` sử dụng package `mobile_scanner`:
+    - Giao diện khung quét QR hiện đại, nút bật/tắt đèn Flash, nút chuyển camera trước/sau.
+    - Tốc độ nhận diện siêu nhạy (< 200ms).
+    - Đọc mã QR `TREE-XXX` → Gọi API lấy thông tin cây → Chuyển hướng tức thì sang `TreeDetailScreen`.
+- **Bạn Thuận:**
+  - Đảm bảo API `GET /api/v1/trees/code/:tree_code` trả về dữ liệu tức thì có cache.
+- **Đầu ra nghiệm thu:** Quét mã QR in trên giấy hoặc màn hình máy tính mở đúng trang chi tiết cây 10/10 lần.
+
+#### Ngày 15: Màn hình Hồ sơ Cây Sinh thái & Lịch sử Chăm sóc
+- **Bạn Lâm:**
+  - Xây dựng `TreeDetailScreen`:
+    - Header hiển thị ảnh chụp cây, tên thông thường, tên khoa học, tọa độ vị trí.
+    - Tab 1: Thông số sinh thái (Độ cao, đường kính tán, năm trồng, thổ nhưỡng).
+    - Tab 2: Lịch sử chăm sóc (Timeline trực quan các lần cắt tỉa, bón phân).
+    - Tab 3: Huy hiệu bảo chứng Blockchain (Tích xanh toàn vẹn, xem Block Number & TX Hash).
+- **Bạn Thuận:**
+  - Kiểm thử đồng bộ dữ liệu giữa Web Admin và Flutter App.
+- **Đầu ra nghiệm thu:** Giao diện mượt mà 60 FPS, thông tin hiển thị nhất quán với Web.
+
+---
+
+### 🔬 GIAI ĐOẠN F: Màn hình AI Analysis, Sự cố & Nhật ký Thực địa (Ngày 16–17)
+
+#### Ngày 16: Màn hình Phân tích AI Chuyên sâu trên Mobile
+- **Bạn Lâm:**
+  - Xây dựng `AiAnalysisScreen`:
+    - Đồng hồ tròn (Circular Gauge) hiển thị Health Score từ 0-100 kèm màu sắc tương ứng.
+    - Thẻ cảnh báo ngã đổ với xác suất (%) và các yếu tố rủi ro then chốt.
+    - Accordion hiển thị Phác đồ điều trị 3 giai đoạn của CareAdvisor.
+    - Nút bấm "Yêu cầu AI phân tích lại ngay lập tức" (gọi trực tiếp Gemini API).
+- **Bạn Thuận:**
+  - Xây dựng màn hình `ClimateAdvisorScreen`: Cho phép người dân hoặc chuyên viên chọn vị trí trên bản đồ để AI gợi ý loài cây nên trồng.
+- **Đầu ra nghiệm thu:** Giao diện phân tích AI trực quan, dữ liệu sinh động, thuyết phục người xem.
+
+#### Ngày 17: Màn hình Báo cáo Sự cố (Dân) & Ghi nhận Chăm sóc (Nhân viên)
+- **Bạn Lâm:**
+  - Xây dựng `ReportIncidentScreen`:
+    - Chụp ảnh sự cố từ camera hoặc thư viện (`image_picker`).
+    - Tự động lấy tọa độ GPS hiện tại của thiết bị.
+    - Dropdown chọn mức độ nghiêm trọng (Cành gãy, nghiêng thân, sâu bệnh nặng, chạm lưới điện).
+  - Xây dựng `CareRecordFormScreen`:
+    - Dành cho nhân viên quét QR cây ngoài công viên, chọn thao tác đã làm (Cắt tỉa, Bón phân, Xử lý mối mọt), chụp ảnh đối chứng sau chăm sóc.
+- **Bạn Thuận:**
+  - Xử lý upload ảnh multipart/form-data tại backend, lưu trữ và sinh URL ảnh an toàn.
+- **Đầu ra nghiệm thu:** Người dân gửi phản ánh sự cố kèm ảnh chụp và GPS trong vòng 30 giây; Nhân viên lưu nhật ký chăm sóc thành công.
+
+---
+
+### 🔔 GIAI ĐOẠN G: Thông báo Đẩy FCM, Tích hợp & Kiểm thử Toàn diện (Ngày 18–19)
+
+#### Ngày 18: Tích hợp Push Notifications & Cảnh báo Khẩn cấp
+- **Bạn Lâm:**
+  - Cấu hình Firebase Cloud Messaging (FCM) trên Flutter app để nhận thông báo nền (Background Notification) và khi đang mở app (Foreground Heads-up).
+- **Bạn Thuận:**
+  - Viết `notificationService.js` trên backend: Khi RiskPredict AI phát hiện cây có nguy cơ ngã đổ mức "Khẩn cấp", hệ thống tự động bắn Push Notification cảnh báo tới điện thoại của tất cả nhân viên phụ trách khu vực đó.
+- **Đầu ra nghiệm thu:** Bắn thông báo test từ backend → Điện thoại reo và hiển thị thông báo cảnh báo tức thì.
+
+#### Ngày 19: Kiểm thử E2E Toàn bộ Hệ sinh thái & Audit Bảo mật
+- **Bạn Thuận:**
+  - Kiểm thử tải (Stress test) API Gateway, kiểm tra bảo mật: Chặn SQL Injection, validate MIME type upload ảnh, kiểm tra token giả mạo, kiểm tra hạn OTP.
+- **Bạn Lâm:**
+  - Kiểm thử luồng E2E trên cả 3 nền tảng: Web Admin (React) ↔ Mobile App (Flutter) ↔ Blockchain (Hardhat EVM).
+  - Kiểm thử 3 kịch bản chính:
+    1. Quét QR cây bằng Flutter → Đọc phân tích sức khỏe AI → Xem đối chiếu Blockchain.
+    2. Người dân báo sự cố trên Flutter → Web Admin nhận thông báo → Phân công xử lý → Nhân viên hoàn tất.
+    3. Thử sửa lén dữ liệu trong SQLite → Cổng xác thực A19 trên cả Web và Mobile lập tức báo động đỏ `DATA_MISMATCH_TAMPERED`.
+- **Đầu ra nghiệm thu:** Bảng báo cáo kiểm thử hoàn thành (Test Summary Report: 100% Pass các ca kiểm thử P0/P1).
+
+---
+
+### 🎓 GIAI ĐOẠN H: Đóng gói Sản phẩm, Viết Báo cáo & Diễn tập Bảo vệ (Ngày 20)
+
+#### Ngày 20: Hoàn tất Bàn giao & Diễn tập Thuyết trình Đồ Án 4
+- **Cả hai thành viên:**
+  - Build bản cài đặt ứng dụng Flutter APK (Android) / TestFlight (iOS) hoàn chỉnh.
+  - Chụp ảnh minh chứng, xuất sơ đồ kiến trúc hệ sinh thái toàn diện.
+  - Biên soạn Slide báo cáo Đồ Án 4:
+    - Slide 1-3: Đặt vấn đề quản lý cây xanh đô thị & Biến đổi khí hậu, giông bão gây tai nạn ngã đổ.
+    - Slide 4-6: Kiến trúc hệ thống đa nền tảng (Flutter + React + Express + SQLite + Hardhat Blockchain).
+    - Slide 7-10: Ứng dụng đột phá của Trí tuệ Nhân tạo Gemini (Đánh giá sức khỏe, Dự đoán ngã đổ, Tư vấn khí hậu, Phác đồ phục hồi).
+    - Slide 11-13: Ứng dụng Blockchain chống gian lận dữ liệu an toàn công cộng.
+    - Slide 14-15: Video Demo và Kịch bản trình diễn trực tiếp.
+  - Diễn tập demo trực tiếp 2 lần liên tiếp theo kịch bản chuẩn 10-12 phút.
+- **Đầu ra nghiệm thu:** Bộ sản phẩm hoàn chỉnh (Mã nguồn sạch, APK cài đặt, Slide bảo vệ, Video demo dự phòng đạt điểm tối đa Đồ Án 4).
+
+---
+
+## 🎯 KỊCH BẢN DEMO BẢO VỆ TỐT NGHIỆP ĐỒ ÁN 4 (10–12 PHÚT)
+
+| Thời gian | Nội dung trình bày | Người phụ trách | Thiết bị & Thao tác demo |
+|:---|:---|:---:|:---|
+| **0:00 - 1:30** | Đặt vấn đề thực tiễn: Quản lý cây xanh đô thị, rủi ro ngã đổ mùa giông bão, gian lận dữ liệu kiểm định | Cả 2 | Chiếu Slide tổng quan kiến trúc hệ thống |
+| **1:30 - 3:00** | Trình diễn Đăng nhập bảo mật cao cấp: Google Sign-In 1 chạm trên Flutter, gửi và xác thực mã OTP qua Email thật | Bạn Thuận | Điện thoại thật / Giả lập Flutter + Hòm thư Gmail |
+| **3:00 - 5:30** | Trình diễn Native Mobile: Quét mã QR cây bằng camera, xem bản đồ cây Google Maps, báo cáo sự cố có định vị GPS | Bạn Lâm | Quét mã QR in trên giấy, camera nhận diện tức thì |
+| **5:30 - 8:00** | **ĐIỂM NHẤN AI (GEMINI)**: Phân tích sức khỏe cây (TreeHealth), dự đoán xác suất ngã đổ (RiskPredict), đề xuất phác đồ điều trị 3 giai đoạn (CareAdvisor), gợi ý cây phù hợp khí hậu (ClimateMatch) | Bạn Lâm | Bấm phân tích AI trực tiếp, hiển thị kết quả phân tích thời gian thực |
+| **8:00 - 9:30** | Trình diễn Web Admin & Điều phối sự cố: Tiếp nhận phản ánh từ mobile, phân công đội hiện trường, biểu đồ thống kê | Bạn Thuận | Trình duyệt Web Admin React |
+| **9:30 - 11:00** | **ĐIỂM NHẤN BLOCKCHAIN**: Neo bản ghi cảnh báo ngã đổ lên Smart Contract, trình diễn màn hình đối chiếu A19. Thử sửa lén DB để chứng minh hệ thống phát hiện gian lận tức thì | Bạn Lâm | Màn hình A18/A19 Blockchain Explorer |
+| **11:00 - 12:00** | Kết luận, bài học kinh nghiệm, hướng phát triển tương lai và trả lời câu hỏi của Hội đồng | Cả 2 | Slide kết luận & Q&A |
+
+---
+*Roadmap Đồ Án 4 UrbanTree phiên bản hoàn thiện — Cam kết đem lại chất lượng xuất sắc nhất cho đợt bảo vệ.*
