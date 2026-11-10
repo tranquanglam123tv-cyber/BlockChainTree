@@ -41,6 +41,27 @@ db.serialize(() => {
     )
   `);
 
+  // Bổ sung các cột mới theo ERD nếu bảng users cũ chưa có
+  addColumnIfNotExists('users', 'auth_provider', "TEXT DEFAULT 'LOCAL'");
+  addColumnIfNotExists('users', 'avatar_url', 'TEXT');
+  addColumnIfNotExists('users', 'google_id', 'TEXT');
+  addColumnIfNotExists('users', 'refresh_token', 'TEXT');
+
+  // ==============================================================
+  // 1b. NHÓM MÃ XÁC THỰC OTP (otp_codes)
+  // ==============================================================
+  db.run(`
+    CREATE TABLE IF NOT EXISTS otp_codes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL,
+      code TEXT NOT NULL,
+      expires_at DATETIME NOT NULL,
+      is_verified INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_otp_email ON otp_codes(email);`);
+
   // ==============================================================
   // 2. NHÓM QUẢN LÝ LOÀI CÂY (tree_types)
   // ==============================================================
@@ -205,6 +226,25 @@ db.serialize(() => {
     )
   `);
   db.run(`CREATE INDEX IF NOT EXISTS idx_audit_record ON blockchain_audits(record_type, record_id);`);
+
+  // ==============================================================
+  // 8. NHÓM ĐÁNH GIÁ & DỰ ĐOÁN AI (ai_assessments)
+  // ==============================================================
+  db.run(`
+    CREATE TABLE IF NOT EXISTS ai_assessments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tree_id INTEGER NOT NULL,
+      engine_type TEXT NOT NULL CHECK(engine_type IN ('TREE_HEALTH', 'CLIMATE_MATCH', 'RISK_PREDICT', 'CARE_ADVISOR')),
+      score REAL,
+      risk_level TEXT CHECK(risk_level IN ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')),
+      result_json TEXT NOT NULL,
+      data_hash TEXT,
+      blockchain_tx_hash TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (tree_id) REFERENCES trees(id) ON DELETE CASCADE
+    )
+  `);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_ai_tree ON ai_assessments(tree_id, engine_type);`);
 
   // ==============================================================
   // CHÈN DỮ LIỆU MẪU BAN ĐẦU (SEED DATA)
